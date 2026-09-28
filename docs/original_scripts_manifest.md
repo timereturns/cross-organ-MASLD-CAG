@@ -42,6 +42,55 @@ organised repository depends on it.
 | 20 | `结果部分确认2026.9.14 19 23.R` | 96 | Results-number spot checks; prints only, no assertions | — | ❌ scaffolding |
 | 21 | `正交去卷积敏感性分析MuSiC 主跑2026.9.14 05 27.R` | **0** | Empty file | — | ❌ empty |
 
+## Second submission (2026-09-28, later)
+
+Five files arrived after the first inventory. Three were **byte-identical** to files
+already analysed — `第一步第二部分GSE135251 独立验证.R` (sha256 `5c809d4c…`),
+`第一步数据下载（CAG）.R` (`60327c63…`) and
+`第一步数据下载（MASLD侧 差异分析已完成）.R` (`83249b81…`) — and required no new work.
+
+The two new files:
+
+### `clump自查 - 8循环重跑9.12.R` — 146 lines — ✅ genuinely useful
+
+It records the MR instrument selection parameters that were previously only implicit
+in a directory name:
+
+```r
+ieugwasr::ld_clump(data.frame(rsid = dat$SNP, pval = dat$p),
+                   clump_kb = 10000, clump_r2 = 0.001,
+                   clump_p = 5e-8, pop = "EUR")
+```
+
+window **10,000 kb** · **r² < 0.001** · **p < 5×10⁻⁸** · **European panel**.
+
+It also documents three things that matter for reading the MR results:
+
+1. **The r² = 0.01 instrument set was purchased.** The comment identifies
+   `eqtlclump/` as *"买来的 0.01 文件所在目录"* — the directory holding the purchased
+   r² = 0.01 files — and the r² = 0.001 set was derived from it here. A second
+   instance of third-party content in the pipeline, though unlike file 1 the derived
+   set is the study's own work.
+2. **TSPAN3's instruments were repaired by hand.** Re-clumping returned **zero** SNPs
+   (guarded by `if (nrow(kept) == 0) stop("clump 结果为空，停下检查")`), then one
+   surviving LD pair still exceeded r² = 0.001 and the lower-F SNP was dropped,
+   guarded by `stopifnot(nrow(kept2) == nrow(d) - 1)`.
+3. **LGALS3 and CADM2 use a single instrument each**, from the looser purchased set,
+   so every estimate for them is a Wald ratio with no Egger intercept, no Q and no
+   MR-PRESSO. **CADM2 is one of the five retained genes**, which makes this worth
+   stating wherever its MR support is discussed.
+
+A fourth item: this script computes instrument strength as `F = (beta/se)²`, the
+univariate form, while the MR run uses the sample-size-aware R² form. The two
+disagree, and `analysis_parameters.md` §9 now records both.
+
+### `test.R` — 25 lines — ❌ not useful
+
+A practice script on the built-in `mtcars` dataset, containing a malformed code fence
+(`` ` ``) inside the R source at line 11. No relation to this project.
+
+---
+
 Line counts are as read during the audit; some differ from the file's byte-derived count
 because of trailing blank lines.
 

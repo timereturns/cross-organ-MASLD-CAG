@@ -22,14 +22,18 @@
 # ROLE IN THE PAPER: exploratory. No estimate survives FDR, and the manuscript
 # says so. This script is not a source of causal claims.
 #
-# THE INSTRUMENTS ARE PRE-CLumped FILES, not recomputed here. The clumping
-# r-squared is 0.001, from the directory name `eqtlclump_r2_0.001`. The window,
-# reference panel and tool are NOT recorded in any surviving script, and the
-# instrument p-value threshold is not re-applied here. If the manuscript states
-# any of those, they came from an earlier step. See
-# docs/manuscript_discrepancies.md and analysis_parameters.md section 9.
+# THE INSTRUMENTS ARE PRE-CLumped FILES, produced by R/11a_instrument_clumping.R —
+# run that first. Their selection parameters, recovered from that script, are:
 #
-# Run:  Rscript R/11_MR_exploratory.R
+#     ieugwasr::ld_clump(clump_kb = 10000, clump_r2 = 0.001, clump_p = 5e-8,
+#                        pop = "EUR")
+#
+# Eight of the ten genes use that derived set. LGALS3 and CADM2 were never
+# re-clumped and come from a looser r^2 = 0.01 set, one SNP each — so all their
+# estimates are Wald ratios with no pleiotropy diagnostics. CADM2 is a retained
+# gene, which makes that worth stating. See docs/analysis_parameters.md section 9.
+#
+# Run:  Rscript R/11_MR_exploratory.R           (after R/11a)
 # =============================================================================
 
 source("R/00_setup.R")

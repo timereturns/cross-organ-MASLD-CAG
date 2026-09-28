@@ -48,11 +48,11 @@ Rscript R/04_audit_LODO_meta.R
 Rscript R/05_composition_adjustment.R
 Rscript R/06_validation_GSE135251.R
 Rscript R/07_singlecell_pseudobulk.R
-Rscript R/10_MR_exploratory.R       # before 09: dimension F of the scoring matrix uses the MR table
-Rscript R/08_deconvolution_MuSiC.R
-Rscript R/09_candidate_scoring.R
-Rscript R/11_HPA_check.R
-Rscript R/12_figures.R
+Rscript R/10_candidate_scoring.R
+Rscript R/11a_instrument_clumping.R # before 11: produces the exposure instrument files
+Rscript R/11_MR_exploratory.R       # before 10 if regenerating dimension F
+Rscript R/12_HPA_check.R
+Rscript R/13_figures.R
 Rscript R/14_fig5_redraw.R          # Fig 5, from the authoritative stage table
 ```
 
@@ -61,15 +61,22 @@ Rscript R/14_fig5_redraw.R          # Fig 5, from the authoritative stage table
 | `01` | internet access; writes `data/<accession>/` |
 | `02` | `01` |
 | `03` | `01`, `02` |
-| `04` | `03` |
-| `05` | `03` |
-| `06` | `03` |
-| `07` | `data/GSE202379`, `data/GSE115469`, `data/GSE134520` |
-| `08` | `03` (needs the four bulk cohorts) |
-| `09` | `04`, `06`, `07`, `10` |
-| `10` | instrument and outcome GWAS files (§4) |
-| `12` | `04`, `06`, `07`, `08` |
-| `14` | `07` |
+| `04` | `01`, `02` |
+| `05` | `03`, `04` |
+| `06` | `04` |
+| `07` | `04` |
+| `08` | `data/GSE202379`, `data/GSE115469`, `data/GSE134520` |
+| `09` | `04` and the deconvolution assets (see §6) |
+| `10` | `03`, `05`, `07`, `08`, `11` |
+| `11a` | internet access (IEU OpenGWAS API); the purchased r² = 0.01 instrument set |
+| `11` | `11a`; the GWAS outcome files |
+| `12` | nothing (curated table) |
+| `13` | `05`, `07`, `08`, `09` |
+| `14` | `08` and the patient covariate table |
+
+Note the ordering constraint around the MR: run `11a` before `11`, and `11` before `10`
+if you are regenerating the scoring matrix, because dimension F of that matrix reads the
+MR results.
 
 A full re-run needs roughly 200 GB of free disk for the raw inputs, most of it the
 GSE135251 per-sample count files and the three single-cell datasets.
@@ -212,8 +219,9 @@ likely to ask about:
 | | bulk cohorts | GSE126848, GSE130970, GSE162694, GSE174478 |
 | | candidates tested | CADM2, ANXA4, LGALS3 |
 | **MR** | instrument filter | per-SNP F > 10 |
-| | clumping | r² = 0.001 (from the instrument directory name); window and panel not recorded — §6 |
-| | harmonisation | `harmonise_data(action = 2)` |
+| | **clumping** | **window 10,000 kb · r² < 0.001 · p < 5×10⁻⁸ · EUR panel**, via `ieugwasr::ld_clump` |
+| | independence check | `ld_matrix`, max r² asserted ≤ 0.001 |
+| | harmonisation | `harmonise_data(action = 2)` — palindromic SNPs dropped |
 | | Steiger | **not applied** in the reported version |
 | | methods | Wald ratio (1 SNP) or IVW |
 | | MR-PRESSO | `NbDistribution = 1000` |
@@ -293,7 +301,8 @@ See `docs/manuscript_discrepancies.md`.
 │   ├── 09_deconvolution_MuSiC.R   bulk gate; full-gene MuSiC; marker panel;
 │   │                              four-arm comparison
 │   ├── 10_candidate_scoring.R     8-dimension adjudication
-│   ├── 11_MR_exploratory.R        two-sample MR (the v4 configuration)
+│   ├── 11a_instrument_clumping.R  cis-eQTL instrument selection and independence QC
+│   ├── 11_MR_exploratory.R        two-sample MR (the reported v4 configuration)
 │   ├── 12_HPA_check.R             protein annotation table
 │   ├── 13_figures.R               Figures 1-4, S1, S2
 │   └── 14_fig5_redraw.R           Figure 5, from the authoritative stage table

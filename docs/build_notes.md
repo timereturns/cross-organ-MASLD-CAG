@@ -1,8 +1,19 @@
 # Repository build notes
 
-How the organised `R/` scripts relate to the 21 original working files, and what
+How the organised `R/` scripts relate to the original working files, and what
 reconstruction involved. For the file-by-file provenance table see
 `original_scripts_manifest.md`.
+
+Source material: **23 files, ~8,400 lines**, arriving in two passes. The second pass added
+`clump自查 - 8循环重跑9.12.R`, which resolved the MR clumping parameters, and `test.R`,
+an unrelated `mtcars` practice script. Three files in the second pass were byte-identical
+to files already analysed.
+
+Output: **16 scripts, ~4,300 lines.**
+
+The reduction is almost entirely removed scaffolding, not removed analysis. The largest
+single contributor is the figure script: ~1,950 lines containing four superseded revisions
+and one abandoned block became ~600 lines containing one version of each figure.
 
 ---
 

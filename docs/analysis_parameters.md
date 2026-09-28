@@ -315,31 +315,64 @@ superseded and should not be presented as the analysis.
 | Item | Value |
 |---|---|
 | Package | `TwoSampleMR` **0.7.9**, with `data.table`, `ieugwasr`, `coloc` |
-| Exposure | 10 genes with cis-eQTL instruments: IL32, GOLM1, TSPAN3, ANXA4, RPS6KA1, ANO10, SLC6A16, KIAA1958 (r² = 0.001 clumped set), LGALS3, CADM2 (looser set) |
-| Instrument file location | directories named `eqtlclump_r2_0.001` and `eqtlclump` — **the clumping r² threshold is 0.001**, but the window (kb), reference panel and the clumping tool are **not recorded in any supplied script** |
-| Instrument p threshold | **not re-applied in these scripts** — the instruments are read as pre-clumped files. `[CONFIRM]` |
-| Exposure columns | `SNP, beta, se, A1, A2, eaf, p, n` |
-| Outcomes | 7: `LiverPDFF_UKB` (GCST90267352, n = 33,235, continuous) **main**; `Gastritis_UKB` (GCST90129440, 41,746/179,970) **main**; `NAFLD_UKB` (GCST90054782, 4,761/373,227) sens; `NAFLD_FinnGen` (R13, 3,943/496,243) sens; `Gastritis_FinnGen` (R13, 12,849/420,114) sens; `FibroCirc_FinnGen` (R13, 2,963/483,311) explor; `StomachCa_FinnGen` (R13 C3, 2,455/372,159) explor |
-| Outcome adaptation | beta and SE parsed from either GWAS-Catalog or FinnGen column layouts; FinnGen `rsids` split on comma, first ID taken; `eaf` back-filled via `ieugwasr::afl2_rsid()` when absent |
-| Harmonisation | `harmonise_data(..., action = 2)` — palindromic SNPs **resolved by allele frequency**, i.e. action 2 drops ambiguous palindromics rather than inferring strand. `[CONFIRM]` the manuscript's description matches action = 2. |
-| Instrument strength | `R2 = 2·β²·EAF·(1−EAF) / (2·β²·EAF·(1−EAF) + 2·N·EAF·(1−EAF)·SE²)`; `F = R2·(N−2)/(1−R2)`; **per-SNP `F > 10` filter**, `mean(F)` recorded per pair |
-| Palindromic/ambiguous handling | `action = 2` |
-| Steiger filtering | **removed** in the v3 revision and absent from v4 — `steiger_ok` is retained as a column but is `NA` |
-| Methods | single instrument: **Wald ratio**, computed manually as `b = β_out/β_exp`, `se = sqrt(se_out²/β_exp² + β_out²·se_exp²/β_exp⁴)`. Multiple instruments: **IVW** (`mr_ivw`) alongside Egger, weighted median and weighted mode |
+| Exposure | 10 genes with cis-eQTL instruments: IL32, GOLM1, TSPAN3, ANXA4, RPS6KA1, ANO10, SLC6A16, KIAA1958 (r² = 0.001 clumped set), LGALS3, CADM2 (**looser purchased set, 1 SNP each**) |
+| **Instrument p threshold** | **`clump_p = 5e-8`** — applied during clumping, not re-applied in the MR scripts |
+| **LD clumping** | **`ieugwasr::ld_clump(..., clump_kb = 10000, clump_r2 = 0.001, clump_p = 5e-8, pop = "EUR")`** — 10,000 kb window, r² < 0.001, European reference panel |
+| **Clumping independence check** | `ieugwasr::ld_matrix(snps, pop = "EUR", with_alleles = TRUE)`, then `max(r²)` over the upper triangle; asserted ≤ 0.001 |
+| **The 0.01 source directory was purchased** | `eqtlclump/` is described in the original as "买来的 0.01 文件所在目录" (the directory holding the purchased r² = 0.01 files); the r² = 0.001 set was produced from it by re-clumping (`clump自查`) |
+| Harmonisation | `harmonise_data(..., action = 2)` — palindromic SNPs **dropped**, not strand-inferred |
+| **F statistic, as recorded during clumping** | **`F = (beta / se)²`** per SNP, univariate; median and minimum reported per gene |
+| **F statistic, as implemented in the MR run** | `R2 = 2·β²·EAF·(1−EAF) / (2·β²·EAF·(1−EAF) + 2·N·EAF·(1−EAF)·SE²)`, `F = R2·(N−2)/(1−R2)`; per-SNP `F > 10` filter |
+| Steiger filtering | **removed** in the v3 revision and absent from v4 — `steiger_ok` is retained as a column but is `NA` throughout |
+| Methods | single instrument: **Wald ratio** (manual formula). Multiple instruments: **IVW** (`mr_ivw`) alongside Egger, weighted median and weighted mode |
 | Heterogeneity | `mr_heterogeneity` → Cochran's Q, IVW row reported |
 | Pleiotropy | `mr_pleiotropy_test` → Egger intercept p |
 | MR-PRESSO | `run_mr_presso(harm, NbDistribution = 1000)` → global p |
-| Multiple testing | BH **within tier**: main+sens pooled as one family, explor as a separate family |
+| Multiple testing | BH **within tier**: {main + sens} pooled as one family, {explor} as a separate family |
 | Estimates | **69** |
 | Result | **No estimate survived FDR** |
 | Follow-up (not in the MR scripts) | `P3 脚本（CADM2 × LiverPDFF × GTEx Liver）` runs `coloc` on CADM2 × LiverPDFF against GTEx liver eQTLs from the eQTL Catalogue |
 | Output | `mr_all_results_v4.csv`, `harmonised_for_coloc.rds` |
 
-`[CONFIRM]` Instrument clumping parameters (window in kb, reference panel, tool) and the
-instrument selection p-value threshold are **not present in the supplied scripts**. If the
-manuscript states them, they were set in an earlier step. Also confirm the manuscript
-describes the harmonisation action correctly: `action = 2` *drops* ambiguous
-palindromic SNPs.
+### ⚠️ Two F-statistic definitions are in play
+
+The clumping self-check records instrument strength as **`F = (beta/se)²`**, the simple
+univariate form. The MR run itself computes F from **R²**, using
+
+```
+R2 = 2·β²·EAF·(1−EAF) / (2·β²·EAF·(1−EAF) + 2·N·EAF·(1−EAF)·SE²)
+F  = R2·(N−2) / (1−R2)
+```
+
+These give different numbers for the same SNP — the second is sample-size aware, the first
+is not. `mean_F` in `mr_all_results_v4.csv` comes from the second. If the manuscript quotes
+a median or minimum F, it is worth checking which definition produced it.
+
+### ⚠️ TSPAN3: an instrument set that was repaired by hand
+
+The clumping self-check records a real problem and its fix:
+
+1. Re-clumping TSPAN3 at r² < 0.001 returned **0 SNPs**. The script contains an explicit
+   guard for this — `if (nrow(kept) == 0) stop("clump 结果为空，停下检查")` — and the
+   file was left empty.
+2. Re-run with the empty-file gate `stopifnot(nrow(d) >= 2)`.
+3. The repair: the remaining SNPs still exceeded r² = 0.001 in one pair, so the
+   **lower-F SNP of that pair was dropped by hand** (`drop <- pair_bare[which.min(fstat[pair_bare])]`),
+   with `stopifnot(nrow(kept2) == nrow(d) - 1)` guarding the edit.
+4. Final state: 4 SNPs, max r² ≤ 0.001.
+
+The supplementary NOTES already record the consequence — *"ukbgast TSPAN3: 2 SNPs"* — so
+the reduced instrument count is documented. But note that TSPAN3 is one of the eight
+**downgraded** genes, and dimension F of the scoring matrix scores it 0.5 on a single
+agreeing estimate. The instrument repair is worth mentioning in the README rather than
+leaving a reviewer to infer it from a 4-SNP file.
+
+### LGALS3 and CADM2 use a different instrument source
+
+Both are read from the **looser purchased set** (`eqtlclump/`, r² = 0.01), not the
+r² = 0.001 set, and each contributes **one SNP**. That means both pairs are Wald ratios
+with no Egger intercept, no Q statistic and no MR-PRESSO. Since CADM2 is one of the five
+retained genes, this should be stated wherever CADM2's MR-support is discussed.
 
 ---
 
@@ -446,3 +479,22 @@ Full detail in `docs/manuscript_discrepancies.md`. Summary:
    manuscript's Data availability list** of 13 accessions. See `docs/manuscript_discrepancies.md`.
 10. **13 vs 14 genes.** `genes14 <- cc$genes_present # 13 个` in the single-cell script.
 11. **Fig S2.** Not referenced by any script; the deconvolution output is tables only.
+12. **Two F-statistic definitions.** The clumping record uses `(beta/se)²`; the MR run
+    uses the sample-size-aware R² form. See §9. Whichever the manuscript quotes, name it.
+13. **TSPAN3's instrument set was repaired by hand.** Re-clumping returned zero SNPs and
+    one over-threshold LD pair was resolved by dropping the lower-F SNP. The reduced
+    instrument count is already recorded in the supplementary notes, but the repair
+    itself is only visible in the clumping self-check.
+14. **LGALS3 and CADM2 use a single instrument each**, from the looser r² = 0.01 set.
+    All their estimates are Wald ratios with no pleiotropy diagnostics. CADM2 is a
+    retained gene, so this belongs next to any MR-based support for it.
+
+---
+
+## Resolved during repository build
+
+- **MR clumping parameters** — supplied by the clumping self-check after the first
+  inventory: `clump_kb = 10000`, `clump_r2 = 0.001`, `clump_p = 5e-8`, `pop = "EUR"`.
+  See §9.
+- **Marker-restricted MuSiC** — present in the bulk-gate file; identified on the second
+  read. See `code_inventory_raw.md` §3.2.
