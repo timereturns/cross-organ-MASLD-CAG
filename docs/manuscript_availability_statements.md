@@ -21,8 +21,8 @@ Both headings must appear verbatim as `Data availability` and `Code availability
 
 | Placeholder | Replace with | Where it comes from |
 |---|---|---|
-| `ACCOUNT/REPO` | your GitHub account and repository name | step 1 of the GitHub → Zenodo walkthrough below |
-| `10.5281/zenodo.XXXXXXX` | the **version DOI** | Zenodo, after the v1.0.0 release is published |
+| ~~`ACCOUNT/REPO`~~ | ✅ **filled in: `timereturns/cross-organ-MASLD-CAG`** | — |
+| ~~`10.5281/zenodo.XXXXXXX`~~ | ✅ **filled in: `10.5281/zenodo.23019602`** | — |
 | *(nothing else)* | | |
 
 **Use the version DOI, not the concept DOI.** Zenodo issues two for every deposit:
@@ -148,8 +148,8 @@ supersedes it.
 > cell-composition adjustment, external validation, patient-level single-cell pseudobulk
 > analysis, MuSiC deconvolution, candidate adjudication, the exploratory Mendelian
 > randomisation, the Human Protein Atlas annotation check and figure generation are
-> available at https://github.com/ACCOUNT/REPO and archived at
-> https://doi.org/10.5281/zenodo.XXXXXXX (version v1.0.0). All analytical parameters are
+> available at https://github.com/timereturns/cross-organ-MASLD-CAG and
+> archived at https://doi.org/10.5281/zenodo.23019602 (version v1.0.0). All analytical parameters are
 > declared in a single configuration script and documented in the repository, including
 > the robust rank aggregation background size, the closed-form P-value implementation,
 > the minimum-cell threshold applied in the pseudobulk analysis, the Bonferroni-corrected

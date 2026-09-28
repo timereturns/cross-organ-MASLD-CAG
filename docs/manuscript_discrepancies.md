@@ -510,6 +510,32 @@ like transparency.
 
 ---
 
+## Repository archived — 2026-09-28
+
+The code was deposited and released while this audit was in progress:
+
+| | |
+|---|---|
+| Repository | https://github.com/timereturns/cross-organ-MASLD-CAG |
+| Release | **v1.0.0**, commit `027ee7e` |
+| **Version DOI** | **10.5281/zenodo.23019602** — cited in the Code availability statement |
+| Concept DOI | 10.5281/zenodo.23019601 |
+
+The archive was created by manual upload of the GitHub release's source zip rather than
+by the Zenodo–GitHub integration, because the integration accepted the release
+(`Received`) but never created a deposit. The manual route produces an equivalent DOI,
+and the record's description points back to the GitHub release so the two remain linked.
+
+**Three items above are still open and are author decisions, not repository gaps:**
+
+1. **item 1** — remove the "20,000 permutations" wording from the Methods, the Table S02
+   title, and the Code availability statement.
+2. **item 3** — the RRA background size: state both the discovery value and the audit
+   value, or reword the Methods.
+3. **item 19** — add GSE174478 to the Data availability statement.
+
+All three are addressed with ready-to-paste text in `manuscript_availability_statements.md`.
+
 ## Items the code settles (no action needed)
 
 | Item | Established value |

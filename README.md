@@ -1,5 +1,7 @@
 # cross-organ-MASLD-CAG
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23019602.svg)](https://doi.org/10.5281/zenodo.23019602)
+
 Analysis code for the manuscript:
 
 > **Cross-organ transcriptomic integration reveals shared cell-state patterns between metabolic dysfunction-associated steatotic liver disease and chronic atrophic gastritis**
@@ -15,7 +17,16 @@ exploratory two-sample Mendelian randomisation. This repository contains the R c
 that pipeline, the analysed result tables, and a full statement of the analysis
 parameters.
 
-**Current release:** v1.0.0 · **DOI:** see the Zenodo badge above (added at release)
+| | |
+|---|---|
+| **Repository** | https://github.com/timereturns/cross-organ-MASLD-CAG |
+| **This release** | **v1.0.0** — commit `027ee7e` |
+| **Version DOI** | **[10.5281/zenodo.23019602](https://doi.org/10.5281/zenodo.23019602)** — the archived v1.0.0 snapshot; cite this one |
+| **Concept DOI** | [10.5281/zenodo.23019601](https://doi.org/10.5281/zenodo.23019601) — always resolves to the newest version |
+
+The **version DOI** is the one cited in the manuscript's Code availability statement,
+because it names the exact snapshot the analyses were run with. The concept DOI is
+provided so that the record remains discoverable if a later version is archived.
 
 > **A note on the manuscript's wording.** The Methods section describes "20,000
 > rank-permutation replicates". There is no permutation step in this analysis: 20,000 is
@@ -375,8 +386,8 @@ If you use this code, please cite the manuscript and the archived release:
              steatotic liver disease and chronic atrophic gastritis"},
   year    = {2026},
   version = {v1.0.0},
-  doi     = {10.5281/zenodo.XXXXXXX},
-  url     = {https://github.com/ACCOUNT/REPO}
+  doi     = {10.5281/zenodo.23019602},
+  url     = {https://github.com/timereturns/cross-organ-MASLD-CAG}
 }
 ```
 

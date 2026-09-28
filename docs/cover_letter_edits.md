@@ -37,15 +37,23 @@ reviewers**, not to readers after publication.
 
 **Fix, in order of preference:**
 
-**(a) Push the repository and publish the release before sending the letter.** Then the
-present tense is true and the manuscript's Code availability statement resolves. This is a
-single afternoon's work and is the recommended route:
+**(a) ✅ DONE.** The repository was pushed, the v1.0.0 release published, and the record
+archived with a DOI:
+
+```
+repository   https://github.com/timereturns/cross-organ-MASLD-CAG
+release      v1.0.0   (commit 027ee7e)
+version DOI  10.5281/zenodo.23019602
+```
+
+The present tense is now true and the manuscript's Code availability statement resolves.
+No action needed beyond pasting the corrected paragraph below.
 
 ```
 GitHub: create a public repository, do NOT initialise it
 git config user.name / user.email      # the current commit carries a placeholder author
 git commit --amend --reset-author --no-edit
-git remote add origin https://github.com/ACCOUNT/REPO.git
+git remote add origin https://github.com/timereturns/cross-organ-MASLD-CAG.git
 git push -u origin main
 Zenodo: Settings > GitHub > toggle the repository ON
 GitHub: Releases > Draft a new release > tag v1.0.0 > Publish
@@ -55,7 +63,7 @@ Zenodo: open the new record, copy the version DOI
 **(b) If the letter must be sent first**, describe the state accurately:
 
 > The analysis code is available to editors and reviewers at
-> https://github.com/ACCOUNT/REPO and will be archived with a permanent DOI before
+> https://github.com/timereturns/cross-organ-MASLD-CAG and will be archived with a permanent DOI before
 > publication; the Code availability statement gives the link.
 
 Replace with the corrected paragraph below once the DOI exists.
