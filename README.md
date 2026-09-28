@@ -272,14 +272,12 @@ log, and two columns of the four-arm comparison table (`verdict`, `note`) were a
 by hand. `docs/manuscript_discrepancies.md` §13–14 lists which rows are computed and
 which are transcripts.
 
-**The Human Protein Atlas citation names the wrong release.** The manuscript cites
-version 25.0. HPA released **25.1 on 2026-05-25**, and the annotations were made on the
-author-confirmed access date of **2026-09-14** — so the release in force during curation
-was 25.1. Fix the citation, then compare the five genes across `v25` and 25.1 at
-`vX.proteinatlas.org`: if the tissue levels, cell-type attributions and antibody
-reliability grades are unchanged, the citation is the only fix needed. The access date
-also needs correcting — the manuscript says 2026-09-05 and the supplementary notes say
-2026-09-13, against a confirmed 2026-09-14. `R/16_verify_hpa_version.R` records the check.
+**The Human Protein Atlas citation has been corrected to version 25.1, accessed 14
+September 2026.** The manuscript previously cited 25.0, but 25.1 (released 2026-05-25) was
+the release in force on the access date. The five genes were then **verified identical
+across v25 and 25.1** on liver level, stomach level, attributed cell types and antibody
+reliability grade, so 25.1 describes exactly the annotation in Table S27.
+`R/16_verify_hpa_version.R` records the check.
 See `docs/manuscript_discrepancies.md` item 7.
 
 **The Human Protein Atlas table is manually curated.** `R/12_HPA_check.R` holds the

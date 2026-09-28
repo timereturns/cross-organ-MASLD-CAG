@@ -56,8 +56,10 @@ the generated table**, so it has to be confirmed another way. Two concrete actio
 
 1. Check the current HPA release number against the site, and against whatever notes or
    browser history exist from the curation session.
-2. Choose one access date. The manuscript and the supplementary notes currently disagree,
-   and an editor comparing the two will notice.
+2. Choose one access date — **resolved**: 14 September 2026 is author-confirmed, and the
+   manuscript and the supplementary notes are to be aligned on it. The version is also
+   resolved: 25.1, verified by comparing the five genes across v25 and 25.1 (all four fields
+   identical for all five genes).
 
 ### Two related points
 

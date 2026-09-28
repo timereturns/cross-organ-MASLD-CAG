@@ -236,12 +236,11 @@ manuscript cited.
 manuscript Data availability statement *and* in the supplementary NOTES (which said 09-13).
 Ready-to-paste wording is in `manuscript_availability_statements.md`.
 
-**One residual assumption, worth five minutes.** The version was named after the fact, so
-the five genes should be confirmed against 25.1 rather than assumed to match. HPA hosts
-superseded releases at `vX.proteinatlas.org`, so both can be opened side by side. Check each
-gene on four fields: liver level, stomach level, attributed cell types, antibody reliability
-grade. If all four are identical across v25 and 25.1, the citation is the whole fix. If any
-differ, the table needs rebuilding — an afternoon, not a rebuild of the study.
+**Verified, not assumed.** The five genes were compared across v25 and 25.1 on four fields
+each — liver level, stomach level, attributed cell types, antibody reliability grade — and
+**all four are identical for all five genes** (author check, 2026-09-28). Version 25.1
+therefore describes exactly the annotation published in Table S27, and correcting the
+citation is the entire fix. No rebuild is needed.
 
 `R/16_verify_hpa_version.R` prints what the site currently reports and records the outcome
 in `results/tables/p4_HPA_version_verification.csv`. It degrades gracefully when the network
