@@ -1,0 +1,61 @@
+# ── Data are NOT redistributed ──────────────────────────────────────────
+# All expression data are public and must be re-downloaded from the source
+# accessions listed in data/datasets.md. See that file before running 01_*.
+data/*
+!data/datasets.md
+!data/README.md
+
+# Common raw / intermediate formats
+*.RData
+*.rda
+*.rds
+*.h5ad
+*.h5seurat
+*.h5
+*.mtx
+*.bz2
+*.gz
+*.tar
+*.zip
+*.cel
+*.CEL
+*.idat
+
+# Per-cohort series matrices and GEO supplementary files
+GSE*/
+*.soft
+*_series_matrix.txt
+*_RAW.tar
+
+# ── Generated results are tracked selectively ───────────────────────────
+# The small, manuscript-cited summary tables in results/tables/ ARE committed
+# (they are the evidence for the numbers in the paper). Raster figures are
+# not, to keep the repository small; regenerate them with the scripts.
+results/figures/*.png
+results/figures/*.tif
+results/figures/*.tiff
+results/figures/*.jpg
+results/figures/*.jpeg
+results/figures/*.pdf
+results/**/*_full.*
+results/**/*_intermediate.*
+results/**/cache/
+
+# ── R session artefacts ────────────────────────────────────────────────
+.Rhistory
+.Rapp.history
+.RData
+.Rproj.user/
+*.Rproj
+*.Rproj.user
+*.knit.md
+
+# ── OS / editor noise ──────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+~$*
+*.tmp
+*~
+.idea/
+.vscode/
