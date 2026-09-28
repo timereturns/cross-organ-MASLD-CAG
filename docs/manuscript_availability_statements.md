@@ -21,13 +21,84 @@ Both headings must appear verbatim as `Data availability` and `Code availability
 
 | Placeholder | Replace with | Where it comes from |
 |---|---|---|
-| `ACCOUNT/REPO` | your GitHub account and repository name | step 1 of the GitHub → Zenodo walkthrough |
+| `ACCOUNT/REPO` | your GitHub account and repository name | step 1 of the GitHub → Zenodo walkthrough below |
 | `10.5281/zenodo.XXXXXXX` | the **version DOI** | Zenodo, after the v1.0.0 release is published |
 | *(nothing else)* | | |
 
-**Use the version DOI, not the concept DOI.** Zenodo issues two: the version DOI pins the
-v1.0.0 snapshot, which is what the analyses were run with, and the concept DOI always
-points at the newest version. The manuscript should cite the snapshot.
+**Use the version DOI, not the concept DOI.** Zenodo issues two for every deposit:
+
+| DOI | Format | Pins to | Use it for |
+|---|---|---|---|
+| **Version DOI** | `10.5281/zenodo.` + 7 digits | this exact release, `v1.0.0` | **the manuscript** — it names the snapshot the analyses were run with |
+| Concept DOI | `10.5281/zenodo.` + 7 digits | the newest version, always | a general citation that should track updates |
+
+Zenodo shows both on the record page. The concept DOI is listed under **Cite all versions**;
+the version DOI is the one shown at the top of the record for that release. Cite the
+version DOI in the manuscript; if you also want to make the tracking DOI discoverable, the
+repository README can carry the concept DOI in its badge.
+
+---
+
+## How to get both, in order
+
+The repository must exist on GitHub **before** the Zenodo switch can be flipped, and the
+release must be published **before** a DOI exists.
+
+**1 · Create the GitHub repository — public**
+
+GitHub → New repository → name it (e.g. `cross-organ-MASLD-CAG`) → **Public** →
+**do not** tick "Add a README", "Add .gitignore" or "Choose a license". The repository
+already has all three, and initialising them on GitHub creates a conflicting first commit.
+
+**2 · Push**
+
+```powershell
+cd "E:\0 博士文章\2026.9.21 CAG与MASLD共病生信\cross-organ-MASLD-CAG"
+
+# set your real identity first — the current commit carries a placeholder author
+git config user.name  "Your Name"
+git config user.email "you@example.com"
+git commit --amend --reset-author --no-edit
+
+git remote add origin https://github.com/ACCOUNT/cross-organ-MASLD-CAG.git
+git push -u origin main
+```
+
+Git Credential Manager will open a browser window to authenticate. If it does not, create a
+**Personal Access Token** (GitHub → Settings → Developer settings → Fine-grained tokens,
+scope `Contents: Read and write`) and use it as the password when prompted.
+
+**3 · Flip the Zenodo switch**
+
+Log in at [zenodo.org](https://zenodo.org) (GitHub or ORCID login both work) →
+**Settings** → **GitHub** → find the repository in the list → click the toggle so it reads
+**ON**. If you do not see the repository, use "Sync now" — Zenodo only lists repositories
+after you grant it access, and it will offer to grant access when you first connect.
+
+**4 · Publish the release**
+
+GitHub → your repository → **Releases** → **Draft a new release** → **Choose a tag** →
+type `v1.0.0` → **Create new tag on publish** → title and description optional →
+**Publish release**.
+
+**5 · Collect the DOI**
+
+Return to Zenodo → **Settings** → **GitHub**, or your Zenodo **Uploads** list. A new record
+appears within a minute or two, titled after the repository. Open it:
+
+- the DOI at the top of that record is the **version DOI** → paste into the manuscript
+- the **Cite all versions** / concept DOI is shown alongside → optional, for the README badge
+
+**Two things that catch people out:** the repository must be public before you publish the
+release, or reviewers cannot open the link; and if you amend the repository after publishing
+the release, the DOI still points at the release snapshot, so the fix is a new release
+(`v1.0.1`), which produces a second version DOI while the concept DOI stays the same.
+
+## After the DOI exists
+
+Send it back and the two placeholders in both statements, plus the README's DOI badge, get
+filled in and committed. That commit is also what triggers `v1.0.1` if a re-release is
+wanted.
 
 ---
 
