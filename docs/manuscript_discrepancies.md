@@ -111,24 +111,58 @@ from the discovery run, the background was the runtime union, and the manuscript
 "20,000" describes the audit re-computation only. The README should state both numbers
 and say which analysis each belongs to.
 
-## 4. Cell-type count: 8 or 9 — OPEN
+## 4. Cell-type count: 8 or 9 — RESOLVED, with the family now derivable
 
 The Bonferroni threshold is stated as **P = 4.8 × 10⁻⁴**, derived from 13 genes ×
 **8 cell types** = 104 tests. Arithmetic checks out: 0.05 / 104 = 4.8077 × 10⁻⁴. ✓
 
-But the code uses different numbers of cell types in different places:
+The apparent problem was that several different cell-type counts appear in the code:
 
 | Where | Count | List |
 |---|---|---|
-| `P0组成校正` `mk_liver` marker list | **9** | Hepatocyte, Cholangiocyte, Kupffer_macro, T_cell, B_plasma, NK, Neutrophil, HSC_fibro, Endothelial |
-| `P2 开始` / `P0组成校正` candidate vector | **6** | IL32, CDHR2, LGALS3, ANXA4, CADM2, RPS6KA1 |
-| `磁盘层执行脚本` `cag_support`, `eff_tab`, `meta_tab`, `audit` | **14** | all candidates |
-| `正交去卷积…` MuSiC reference (`ct_merged`) | reported **8** | per Table S41 note, B-cell 1/2 merged, 99,687 cells |
-| `P2 开始` `genes14` | **14** | |
+| `R/06` composition-adjustment marker panel (`mk_liver`) | **9** | Hepatocyte, Cholangiocyte, Kupffer_macro, T_cell, B_plasma, NK, Neutrophil, HSC_fibro, Endothelial |
+| `R/09` MuSiC reference (`ct_merged`) | **8** | the snRNA vocabulary; per Table S41, B-cell 1/2 merged |
+| `R/08` gastric single-cell annotation | **12** | G_epithelium, Pit, Neck, Parietal, Chief, Enteroendocrine, Fibroblast, Endothelial, Myeloid, T_NK, B_plasma, Mast |
+| **the localisation matrix the 104-test family is built on** | **8** | **see below** |
 
-→ Confirm the exact 8 cell types and the exact 13 genes behind the 104 tests. The
-README must state them explicitly, because "13 × 8" is a checkable claim and the code
-does not contain a single place where both numbers appear together.
+**These are four different analyses, each with its own legitimate vocabulary.** The one
+behind the threshold is the cross-dataset liver localisation, and both of its dimensions
+are recoverable from the code.
+
+### The 8 cell types
+
+The unified liver lineage vocabulary from the lineage map in the single-cell script
+(`跑 compact 版三件套.R` L129–151), applied identically to GSE202379 and GSE115469:
+
+```
+Hepatocytes · Cholangiocytes · Macrophages · Stellate ·
+Endothelial · Lymphocytes · B_cells · Erythroid
+```
+
+The map also emits an `"Other"` residual bucket for unmatched labels. **It is not a cell
+type and must not be counted** — including it would inflate the family to 9 and change the
+threshold.
+
+### The 13 genes
+
+The candidate genes that survive in the liver localisation matrices. GSE202379 carries 13
+of the 14 — the original file names the object `genes14` while commenting `# 13 个`, because
+one candidate is absent from that dataset.
+
+**RPS6KA1 is the likely exclusion**, and it is independently corroborated: Supplementary
+NOTE 17 states *"RPS6KA1 is absent from the deconvolution reference gene rows (the other
+five candidates are present)"*, and the deconvolution code's `excl_skip` mechanism exists
+precisely to handle a candidate that is not in the reference.
+
+→ **Confirm the exact 13.** `R/17_bonferroni_family.R` derives both dimensions from the
+localisation tables, prints which genes are present in each dataset, and warns if the
+product is not 104. Its assertions were exercised in both directions during the build: a
+13 × 8 family passes, and a 12 × 8 family fails loudly rather than quietly producing a
+different threshold.
+
+Once it has been run against the real localisation tables, the family should be copied into
+the manuscript's Methods, where it belongs — "13 genes × 8 cell types" is a checkable claim
+and currently cannot be checked from the text alone.
 
 ## 5. Fibrosis pseudobulk threshold — OPEN
 

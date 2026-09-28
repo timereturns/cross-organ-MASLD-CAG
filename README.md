@@ -61,6 +61,7 @@ Rscript R/12_HPA_check.R
 Rscript R/13_figures.R
 Rscript R/14_fig5_redraw.R          # Fig 5, from the authoritative stage table
 Rscript R/16_verify_hpa_version.R   # HPA release check (needs internet; optional)
+Rscript R/17_bonferroni_family.R    # derives and asserts the 104-test family
 ```
 
 | Script | Depends on |
@@ -328,7 +329,8 @@ See `docs/manuscript_discrepancies.md`.
 │   ├── 12_HPA_check.R             protein annotation table
 │   ├── 13_figures.R               Figures 1-4, S1, S2
 │   ├── 14_fig5_redraw.R           Figure 5, from the authoritative stage table
-│   └── 16_verify_hpa_version.R    verifies the cited HPA release against the site
+│   ├── 16_verify_hpa_version.R    verifies the cited HPA release against the site
+│   └── 17_bonferroni_family.R     derives and asserts the 104-test family
 ├── data/
 │   └── datasets.md                accessions, platforms, dates
 ├── results/

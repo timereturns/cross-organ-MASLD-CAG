@@ -271,6 +271,43 @@ discrimination performance.
 | GSE134520 cell-type annotation | marker-score `which.max` over 12 gastric lineages (G_epithelium, Pit, Neck, Parietal, Chief, Enteroendocrine, Fibroblast, Endothelial, Myeloid, T_NK, B_plasma, Mast) |
 | Outputs | `p1_gse202379_localization.csv`, `p1_gse202379_pseudobulk_cpm.csv`, `p1_gse202379_fibrosis_cor.csv`, `p1_gse202379_fibrosis_stage_counts.csv`, `p1_gse115469_*`, `p1_gse134520_*` |
 
+### The Bonferroni family — 13 genes × 8 cell types = 104
+
+This is the family behind the manuscript's threshold, and **both dimensions are recoverable
+from the code.** `R/17_bonferroni_family.R` derives them from the localisation tables and
+asserts the product.
+
+**The 8 cell types** — the unified liver lineage vocabulary the cross-dataset localisation
+is built on (lineage map in the single-cell script, L129–151):
+
+```
+Hepatocytes · Cholangiocytes · Macrophages · Stellate ·
+Endothelial · Lymphocytes · B_cells · Erythroid
+```
+
+The lineage map also emits an `"Other"` residual bucket for unmatched labels. **It is a
+residual, not a cell type, and must not be counted** — including it would make the family
+9 × 13 = 117 and change the threshold.
+
+**The 13 genes** — the candidates surviving in the liver localisation matrices. GSE202379
+carries 13 of the 14. **RPS6KA1 is the likely exclusion**, corroborated independently by
+Supplementary NOTE 17 (*"RPS6KA1 is absent from the deconvolution reference gene rows"*)
+and by the `excl_skip` mechanism in the deconvolution code, which exists precisely to
+handle a candidate missing from the reference.
+
+### ⚠️ Four cell-type counts appear in this study — none of them is wrong
+
+| Analysis | Count | Vocabulary |
+|---|---|---|
+| Cross-dataset liver localisation (the 104-test family) | **8** | the unified lineage vocabulary above |
+| Composition-adjustment marker panel (`R/06`) | **9** | Hepatocyte, Cholangiocyte, Kupffer_macro, T_cell, B_plasma, NK, Neutrophil, HSC_fibro, Endothelial |
+| MuSiC reference (`R/09`) | **8** | the snRNA vocabulary; per Table S41 B-cell 1/2 merged, 99,687 cells |
+| Gastric single-cell annotation (`R/08`) | **12** | gastric lineages including Pit, Neck, Chief, Parietal |
+
+Each is correct for its own analysis. The manuscript should name the vocabulary wherever
+the number appears, rather than letting a bare "8 cell types" stand unqualified for the
+whole paper.
+
 ---
 
 ## 7. Human Protein Atlas annotation check
@@ -568,10 +605,10 @@ Full detail in `docs/manuscript_discrepancies.md`. Summary:
 3. **Bonferroni family.** Manuscript: 13 genes × 8 cell types = 104. Code: the marker
    panel has 9 cell types; candidate vectors are 6, 13 or 14 depending on the block.
    → State the exact 13 genes and 8 cell types in the README.
-4. **Cell-type count.** 9 in the composition-adjustment marker panel, 8 in the MuSiC
-   reference, 12 lineages in the gastric single-cell annotation, 8 unified lineages for
-   GSE115469. All are legitimate for their own analysis, but the README must not let a
-   single "8 cell types" stand unqualified for the whole paper.
+4. **Cell-type count — RESOLVED.** Four counts appear (8 / 9 / 8 / 12) and each is
+   legitimate for its own analysis. The one behind the Bonferroni family is the 8-lineage
+   cross-dataset liver localisation, named in section 6. The manuscript should name the
+   vocabulary wherever the number appears.
 5. **HPA access date.** Manuscript 2026-09-05; code NOTES 2026-09-13.
 6. **HPA version.** 25.0 appears in the manuscript only, never in code.
 7. **HPA table provenance.** Hand-typed; one cell self-contradictory; no per-gene
