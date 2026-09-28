@@ -142,20 +142,36 @@ MR_CLUMPING_R2     <- 0.001              # from the instrument directory name
                                          # eqtlclump_r2_0.001 -- window and panel are
                                          # not recorded in any surviving script
 
-# --- Permutation -------------------------------------------------------------
-# The manuscript refers to permutation testing and Table S02 is titled
-# "Leave-one-dataset-out exact RRA (20,000 permutations)". The permutation script
-# itself was not retained. These two values are the project's recorded settings;
-# they are used by no code in this repository because the resampling step is
-# missing. See repository_scope.md.
-PERMUTATION_N    <- 20000L
-PERMUTATION_SEED <- 20260914L
+# --- Permutation: there is none ----------------------------------------------
+# The manuscript Methods describes "20,000 rank-permutation replicates" and Table
+# S02 is titled "Leave-one-dataset-out exact RRA (20,000 permutations)". Neither
+# describes a permutation analysis. There is no Monte Carlo step anywhere in this
+# pipeline:
+#
+#   * 20,000 is the RRA BACKGROUND GENE COUNT (RRA_BACKGROUND_N_AUDIT above), passed
+#     as the denominator of the closed-form exact P-value;
+#   * the leave-one-dataset-out audit recomputes that closed form once per dropped
+#     cohort -- six iterations, and every output is a deterministic function of the
+#     input ranks.
+#
+# Because nothing is resampled, there is no seed to set and no replicate count to
+# record. The LODO table is fully reproducible from R/05_audit_LODO_meta.R.
+#
+# The only genuinely stochastic procedure in the project is the AUC bootstrap, below.
+# See docs/manuscript_discrepancies.md item 1 for the three places the manuscript
+# wording needs fixing.
 
-# The only seed that appears in the surviving code, attached to the AUC bootstrap
-# blocks of the post-review evidence pass.
-BOOTSTRAP_SEED    <- 20260914L
-BOOTSTRAP_N       <- 2000L
-JITTER_SEED       <- 42L   # added by this repository; the original jitter had none
+# --- Bootstrap and jitter -----------------------------------------------------
+# The AUC bootstrap for the GSE135251 validation: 2,000 resamples, percentile CI.
+# This is the single seed that appears in the original working files
+# (第一次预审稿文件处理.R, two blocks).
+BOOTSTRAP_SEED <- 20260914L
+BOOTSTRAP_N    <- 2000L
+
+# Figure jitter positions. Added by this repository: the original used base-R
+# stripchart(method = "jitter") with no seed, so point positions were not
+# reproducible.
+JITTER_SEED    <- 42L
 
 # --- Candidate genes ---------------------------------------------------------
 candidates_14 <- c("IL32", "CDHR2", "ANXA4", "CADM2", "LGALS3",

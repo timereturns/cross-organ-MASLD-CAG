@@ -60,7 +60,7 @@ reported numbers. The header of each affected script says which it is.
   cutoff moved from 0.05 to 0.01 in the original code. The repository runs the final
   value and records the sequence in the parameter file.
 - **The `theta` definition used for the published tables is the one kept.** Two
-  definitions coexist in the working files; see `manuscript_discrepancies.md` §15 for
+  definitions coexist in the working files; see `manuscript_discrepancies.md` §16 for
   which was identified and how.
 
 ---

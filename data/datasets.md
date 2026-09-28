@@ -46,7 +46,7 @@ select the 14 candidate genes, and were interrogated once for replication only.
 
 ⚠️ **GSE174478 is not listed in the manuscript's Data availability statement.** It is
 analysed and reported in the supplementary tables and Figure S2, so it needs to be added
-there. See `docs/manuscript_discrepancies.md` §18.
+there. See `docs/manuscript_discrepancies.md` §19.
 
 
 ## 4. Single-cell / single-nucleus datasets (n = 3)

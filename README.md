@@ -17,6 +17,12 @@ parameters.
 
 **Current release:** v1.0.0 · **DOI:** see the Zenodo badge above (added at release)
 
+> **A note on the manuscript's wording.** The Methods section describes "20,000
+> rank-permutation replicates". There is no permutation step in this analysis: 20,000 is
+> the robust rank aggregation background gene count, and the leave-one-dataset-out audit
+> is computed in closed form. The statistics are correct and fully reproducible here; the
+> label is not. See §6 and `docs/manuscript_discrepancies.md` item 1.
+
 ---
 
 ## 1. What is here, and what is not
@@ -197,10 +203,10 @@ likely to ask about:
 | **Cross-organ finalisation** | gastric DEG rule | `P.Value < 0.05 & abs(logFC) > 0.5` |
 | | gastric requirement | significant in **both** gastric cohorts, same direction |
 | | liver requirement | **≥ 4 of 6** cohorts in the stated direction |
-| **Robustness audit** | LODO | full re-ranking with each of 6 cohorts dropped |
+| **Robustness audit** | LODO | closed-form exact RRA `min_k pbeta(x_(k); k, n−k+1)`, recomputed with each of 6 cohorts dropped |
 | | retention | rank ≤ 200, or P < 0.01, after the drop |
 | | DT side correction | none — descriptive |
-| **Permutation** | count and seed | **20,000 and seed 20260914** — see §6 |
+| | **there is no permutation step** | 20,000 is the RRA **background N**, not a replicate count — see §6 |
 | **Meta-analysis** | model | `metafor::rma(yi = logFC, sei = SE, method = "REML")` |
 | | SE derivation | `SE = logFC / t` |
 | | pooling unit | within organ, within platform (chip vs RNA-seq) |
@@ -237,15 +243,20 @@ likely to ask about:
 Stated here rather than left to be discovered. `docs/manuscript_discrepancies.md` gives
 the full record with code locations.
 
-**The permutation test script was not retained.** The manuscript Introduction refers to
-permutation testing and the Code availability statement cites "the random seeds used for
-permutation testing". Supplementary Table S02 is titled *"Leave-one-dataset-out exact RRA
-(20,000 permutations)"*. What this repository contains is the deterministic
-leave-one-dataset-out procedure the permutation test wraps (`R/04_audit_LODO_meta.R`),
-including the exact closed-form P-value implementation, plus its output table. The seed
-`20260914` and the count 20,000 are recorded, but they come from the project's
-convention and the table title rather than from readable permutation code. **The
-resampling step cannot be re-run from this repository.**
+**"20,000 permutations" is a misnomer — there is no permutation analysis.** The manuscript
+Methods and the Table S02 title both describe the leave-one-dataset-out audit as a
+permutation test with 20,000 replicates. In fact **20,000 is the robust rank aggregation
+background size**, and the audit uses the closed-form exact P-value
+`min_k pbeta(x_(k); k, n − k + 1)`, run once per dropped cohort — six runs, not 20,000.
+Nothing is resampled, so nothing was lost and there is no seed to quote. **The LODO table
+is fully reproducible from this repository.**
+
+The label needs fixing in three places: the Methods wording, the Table S02 title, and the
+Code availability statement's promise of "the random seeds used for permutation testing".
+See `docs/manuscript_discrepancies.md` item 1.
+
+The one genuinely stochastic procedure is the **AUC bootstrap** for GSE135251 (2,000
+resamples, seed `20260914`), implemented in full in `R/07_validation_GSE135251.R`.
 
 **Two background sizes appear in the RRA.** The discovery screen used
 `N <- length(all_sym)`, the runtime size of the union of symbols across the six liver
@@ -256,7 +267,7 @@ manuscript should be read with that distinction in mind.
 **Several values in the supplementary tables are transcribed rather than computed.**
 The deconvolution QC table (Table S35) contains numbers recorded from an interactive run
 log, and two columns of the four-arm comparison table (`verdict`, `note`) were appended
-by hand. `docs/manuscript_discrepancies.md` §12–13 lists which rows are computed and
+by hand. `docs/manuscript_discrepancies.md` §13–14 lists which rows are computed and
 which are transcripts.
 
 **The Human Protein Atlas table is manually curated.** `R/11_HPA_check.R` holds the

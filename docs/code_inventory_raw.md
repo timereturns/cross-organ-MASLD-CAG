@@ -92,29 +92,33 @@ reviewer comparing the manuscript's "20,000" against a script that computed
 
 ## 3. Missing code
 
-### 3.1 ⛔ CRITICAL — permutation testing
+### 3.1 ✅ RESOLVED — there is no permutation test, and nothing is missing
 
-The manuscript Introduction refers to permutation testing, the Code availability
-statement promises "the random seeds used for permutation testing", and Supplementary
-Table S02 is titled **"Leave-one-dataset-out exact RRA (20,000 permutations)"**.
+**Correction to the first draft of this inventory.** It reported a missing permutation
+script as the highest-priority gap. That was wrong: **the analysis contains no Monte
+Carlo step at all.**
 
-**No permutation loop exists in any of the 21 files.** A full-tree search for
-`set.seed`, `sample(`, `replicate(`, `置换`, `permut`, `nperm` returns only:
+A full-tree search for resampling primitives (`set.seed`, `permut`, `置换`, `sample(`,
+`replicate(`, `runif`, `rnorm`) across all original files returns only:
 
-- `第一次预审稿文件处理.R` lines 206 and 352: `set.seed(20260914)`
-- `第一次预审稿文件处理.R` lines 251 and 404: `B <- 2000` — these drive the
-  **AUC bootstrap** (Table S39), a different analysis
-- `run_mr_presso(..., NbDistribution = 1000)` in the three MR scripts — MR-PRESSO,
-  also unrelated
-- the string `"20,000 permutations"` in a table title at line 442
+| Location | What it is |
+|---|---|
+| `第一次预审稿文件处理.R` L206, L352 | `set.seed(20260914)` |
+| `第一次预审稿文件处理.R` L255–257 | `replicate(B, { b1 <- sample(i1, ...); b0 <- sample(i0, ...) })` with `B <- 2000` — the **AUC bootstrap**, feeding Table S39 |
+| `第一次预审稿文件处理.R` L408–409 | the same bootstrap, repeated for a second cohort |
+| `eQTLGen… 第三次跑` L126 (and the two earlier MR runs) | `run_mr_presso(..., NbDistribution = 1000)` — **MR-PRESSO**, an unrelated procedure |
+| `第一次预审稿文件处理.R` L442 | the string `"Leave-one-dataset-out exact RRA (20,000 permutations)"`, inside a table title |
 
-So the seed used by the permutation test is recoverable
-(**`set.seed(20260914)` appears at the top of the post-review blocks**), but the
-permutation code itself and its iteration count are not present. The permission
-setting must be confirmed against the script that actually produced Table S02.
+The LODO audit itself uses the closed-form function `rra_rho()` — `min_k pbeta(x_k;
+k, n−k+1)` — applied deterministically. `20000` appears in that code as the **background
+denominator**, not as an iteration count.
 
-**Action required:** supply the script that generated `p0_lodo_exact_rra.csv` /
-Table S02, or confirm that `set.seed(20260914)` with 20,000 permutations is correct.
+So: the LODO table is **fully reproducible** from this repository, and there is no seed
+because there is nothing stochastic to seed. The only defect is a **label**: both the
+manuscript Methods and the Table S02 title call this a permutation test with 20,000
+replicates. See `manuscript_discrepancies.md` item 1 for the three places that need
+rewording.
+
 
 ### 3.2 ✅ RESOLVED — marker-restricted MuSiC is present after all
 
@@ -255,14 +259,19 @@ leaving them to be discovered. The README drafts in this directory do so.
 Blocking, in priority order:
 
 1. **Third-party code provenance** — resolve before anything is published (§4).
-   Author decision: the affected script is held out of the public repository.
-2. **Permutation test script**, or confirmation that the seed is `20260914` and the
-   count is 20,000 (§3.1). Author reports this script is not available.
-3. **`B_b4_compare.csv`** — must contain the `verdict` and `note` columns, or the
-   TableS32 block fails. See `manuscript_discrepancies.md` §12.
-4. **The derived result CSVs** listed in §3.4.
-5. GSE153224, GSE202379-preprocessing and deconvolution-asset scripts (§3.3), if
-   they exist.
+   Author decision: the affected script is held out of the public repository, and the
+   stage is re-implemented in `R/01_download_and_DE.R`.
+2. **`B_b4_compare.csv`** — must contain the `verdict` and `note` columns, or the
+   TableS32 block fails. See `manuscript_discrepancies.md` §13.
+3. **The derived result CSVs** listed in §3.4.
 
-Resolved since the first pass: marker-restricted MuSiC (§3.2) is present.
+Resolved since the first pass:
+
+- Permutation testing (§3.1) — does not exist; the LODO audit is deterministic and fully
+  reproducible. The defect is a label in the manuscript, not a missing script.
+- Marker-restricted MuSiC (§3.2) — present in the bulk-gate file.
+- MR clumping parameters — recovered from `clump自查`, now in `R/11a`.
+- HPA version and access date — the generated table records neither; needs author
+  confirmation, not a file.
+
 

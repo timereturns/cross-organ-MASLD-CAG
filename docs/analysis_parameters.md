@@ -67,7 +67,7 @@ Group vectors carry names and are asserted against expected counts
 | Random seed | **None needed** — RRA is deterministic and no subsampling is applied |
 
 **`[MANUSCRIPT]`** The manuscript states the background size as 20,000. The discovery
-screen used a runtime value. See §13, item 1.
+screen used a runtime value. See item 3.
 
 ### Cross-organ candidate finalisation
 
@@ -88,7 +88,7 @@ screen used a runtime value. See §13, item 1.
 
 | Item | Value |
 |---|---|
-| Procedure | Full re-ranking with each of the 6 liver cohorts dropped in turn; RRA recomputed on the reduced set |
+| Procedure | Full re-ranking with each of the 6 liver cohorts dropped in turn; the aggregation is recomputed on the reduced set |
 | Implementation | `apply(mat[, -j], 1, rra_rho, denom = den_lodo(ncol(mat) - 1))` — a genuine recomputation, not rank dropping |
 | Denominator | `use_N20000` → `rep(20000, k)` |
 | Retention criterion A (`in200`) | rank ≤ **200** after dropping that cohort |
@@ -97,23 +97,62 @@ screen used a runtime value. See §13, item 1.
 | Alternative-background LODO | `p0_lodo_rra_percohortN.csv`, using per-cohort gene counts as denominators |
 | Package cross-check | `p0_lodo_aggregateRanks.csv`, recomputed with the `RobustRankAggreg` package rather than the closed-form function |
 
-### 3.2 Permutation testing — `[CONFIRM]`
+### 3.2 ✅ RESOLVED — there is no permutation test, and none is needed
+
+**This section previously described a missing permutation script. That was wrong.** The
+analysis contains no Monte Carlo step at all, and nothing has been lost.
+
+The LODO audit is **deterministic and closed-form**:
+
+```r
+# 磁盘层执行脚本2026.9.12 16 56.R, lines 31-37
+rra_rho <- function(r, denom) {
+  r <- as.numeric(r); r <- r[!is.na(r)]
+  if (length(r) < 2) return(NA_real_)
+  if (length(denom) == 1) denom <- rep(denom, length(r))
+  x <- sort(r / denom); n <- length(x)
+  min(vapply(seq_len(n), function(k) pbeta(x[k], k, n - k + 1), numeric(1)))
+}
+```
+
+Every quantity it produces is a deterministic function of the input ranks. There is no
+resampling, so there is nothing to seed, and **the LODO table is fully reproducible from
+the code in this repository** — which is a stronger position than having a seed to quote.
 
 | Item | Value |
 |---|---|
-| Number of permutations | **20,000** — stated in the title of Table S02: *"Leave-one-dataset-out exact RRA (20,000 permutations)"*. The count is **not** present as a code literal anywhere. |
-| **Random seed** | **`20260914`** — the only seed in the project: `set.seed(20260914)`, two occurrences. |
-| Where the seed occurs | `第一次预审稿文件处理.R` lines 206 and 352, both attached to **AUC bootstrap** blocks (`B <- 2000`), i.e. the block immediately preceding the permutation work in the same session |
-| Permutation scheme | **Not recoverable from the supplied files.** |
-| Reported statistic | **Not recoverable** — presumably per-gene retention across the 20,000 permuted LODO runs |
+| Monte Carlo steps in the pipeline | **none** |
+| Resampling anywhere in the original files | only `第一次预审稿文件处理.R` L255–257 and L408–409, inside the **AUC bootstrap** (`B <- 2000`) |
+| Seed attached to that bootstrap | `set.seed(20260914)` (L206, L352) |
+| `20000` in the LODO code | the **background gene count**, passed as the denominator at L45 and L52 — not an iteration count |
+| Retention tallies | `in200_drop_*` (L76) and `lt001_drop_*` (L77), counting LODO runs, not resamples |
 
-**The permutation script itself is not among the files supplied.** What exists is the
-deterministic LODO procedure it wraps (§3.1) and the output table it produced. The
-Code availability statement promises "the random seeds used for permutation testing";
-that promise currently rests on `20260914` being the seed, which is an inference from
-adjacency, not a reading of the permutation code.
+### ⚠️ The "20,000 permutations" label is a misnomer — and it is in the manuscript
 
-→ Confirm the seed and the count, or supply the script. See `docs/repository_scope.md` §2.
+The manuscript's Methods describes **"20,000 rank-permutation replicates"**, and
+Supplementary Table S02 is titled *"Leave-one-dataset-out exact RRA (20,000
+permutations)"*.
+
+Both are describing the LODO audit. **Neither is performing permutations.** The 20,000 is
+the RRA background size `N`, and the procedure is the closed-form exact aggregation, run
+once per dropped cohort — six runs, not 20,000.
+
+This is a labelling problem, not an analysis problem: the statistics are correct and
+reproducible. But it must be fixed in three places, because a reviewer who looks for a
+permutation step will not find one and will reasonably conclude the code is missing:
+
+1. **Methods** — replace "20,000 rank-permutation replicates" with a description of the
+   LODO audit: the exact robust rank aggregation, recomputed with each discovery cohort
+   removed in turn, using a background of 20,000 genes.
+2. **Table S02 title** — *"Leave-one-dataset-out exact RRA (20,000 permutations)"* →
+   something like *"Leave-one-dataset-out exact RRA (background N = 20,000)"*.
+3. **Code availability statement** — remove "the random seeds used for permutation
+   testing". No permutation testing is performed, so this promise cannot be honoured and
+   does not need to be. Replace it with the parameters that do matter: the RRA background
+   size, the closed-form P-value implementation, the minimum-cell pseudobulk threshold and
+   the Bonferroni threshold — all of which are documented and reproducible.
+
+The full statement of what happened is in `manuscript_discrepancies.md` item 2.
 
 ### 3.3 Effect-size meta-analysis
 
@@ -146,7 +185,7 @@ adjacency, not a reading of the permutation code.
 
 `[MANUSCRIPT]` The Bonferroni family is stated as 13 genes × 8 cell types = 104. The
 code's marker panel has **9** cell types and the candidate vectors vary between 6, 13
-and 14 genes depending on the block. See §13, item 3.
+and 14 genes depending on the block. See item 4.
 
 ---
 
@@ -178,7 +217,7 @@ are **not** stated as a rule in the code — the script produces a ranked total 
 grouping is authorial. State the rule explicitly, because Table S11 is titled a
 "transparent 8-dimension scoring matrix" and a reviewer will look for the decision
 boundary. **Two of the eight dimensions (G, H) are hand-assigned**, and three total
-values circulate in the files for IL32 and LGALS3 (see §13, item 8).
+values circulate in the files for IL32 and LGALS3 (see item 9).
 
 ---
 
@@ -260,7 +299,7 @@ The **generated artifact** was obtained and inspected
 So the manuscript's "version 25.0" and *both* candidate access dates come from outside this
 artifact. They are not wrong; they are simply not corroborated by it. Before submission,
 confirm the version against the site and pick one access date, because the manuscript and
-the supplementary notes currently disagree (item 6 of `manuscript_discrepancies.md`).
+the supplementary notes currently disagree (item 7 of `manuscript_discrepancies.md`).
 
 The reconstruction in `R/12_HPA_check.R` reproduces the artifact's 9 columns exactly, then
 adds four columns — `hpa_version`, `access_date`, `provenance` and
@@ -270,7 +309,7 @@ adds four columns — `hpa_version`, `access_date`, `provenance` and
 
 `stomach_cells` is the constant `"Glandular cells"` for all five genes, applied to CADM2
 whose own `stomach_level` is `"Not detected (raw Low)"`. The script now flags this at run
-time. See `manuscript_discrepancies.md` item 7.
+time. See `manuscript_discrepancies.md` item 8.
 
 ---
 
@@ -403,14 +442,18 @@ retained genes, this should be stated wherever CADM2's MR-support is discussed.
 |---|---|---|---|
 | Fig 1 effect-size heatmap | **140** gene–cohort tests (14 candidates × 10 cohorts) | BH, within the heatmap | — |
 | Discovery RRA | 200 up + 200 dn carried forward | RRA score threshold only | Score < 0.01 |
-| LODO audit | 14 genes × 6 drop-iterations | none — descriptive | rank ≤ 200 or P < 0.01 |
+| LODO audit | 14 genes × 6 drop-iterations = **84 rank comparisons**, plus 14 × 6 direction tallies | none — descriptive | rank ≤ 200 or P < 0.01 |
 | External validation | **5** pre-specified candidates per cohort | BH | — |
 | Single-cell pseudobulk | **104** tests (13 genes × 8 cell types) | **Bonferroni** | **P = 4.8 × 10⁻⁴** |
 | Composition adjustment | 6 candidates × up to 9 cell types | none — sensitivity | — |
 | MR | main+sens one family; explor a second | BH, per family | — |
+| AUC bootstrap CI | 5 genes × 2000 resamples | percentile CI, not a test | — |
 
 Arithmetic check: 0.05 / 104 = 4.8077 × 10⁻⁴ → **4.8 × 10⁻⁴** ✓ consistent with the
 manuscript.
+
+Note there is **no permutation family**. The pipeline performs no resampling-based
+testing, so there is no multiplicity correction across resamples. See §3.2.
 
 ---
 
@@ -478,10 +521,12 @@ Full detail in `docs/manuscript_discrepancies.md`. Summary:
 1. **RRA background size.** Manuscript: 20,000. Discovery screen: `length(all_sym)`, a
    runtime union. 20,000 belongs to the *audit* recomputation and was hand-selected.
    → Fix the manuscript wording or document both numbers.
-2. **Permutation testing.** Manuscript and Code availability refer to it; the script was
-   not retained. Seed `20260914` and count 20,000 are inferred, not read from code.
-   → Confirm, or soften the Code availability statement to match
-   `docs/repository_scope.md` §2.
+2. **"20,000 permutations" is a misnomer.** The manuscript Methods and the Table S02
+   title both describe the LODO audit as a permutation test with 20,000 replicates. There
+   is no permutation step: the 20,000 is the RRA background size `N` and the procedure is
+   closed-form, run once per dropped cohort. **The analysis is correct and fully
+   reproducible; only the label is wrong.** Fix the Methods wording, the Table S02 title,
+   and the Code availability statement. See §3.2.
 3. **Bonferroni family.** Manuscript: 13 genes × 8 cell types = 104. Code: the marker
    panel has 9 cell types; candidate vectors are 6, 13 or 14 depending on the block.
    → State the exact 13 genes and 8 cell types in the README.
@@ -514,8 +559,16 @@ Full detail in `docs/manuscript_discrepancies.md`. Summary:
 
 ## Resolved during repository build
 
+- **"Permutation testing" — it does not exist.** The pipeline performs no Monte Carlo
+  step. The LODO audit is deterministic and closed-form, and is fully reproducible from
+  the code here. The label originated in the Methods text and the Table S02 title. See
+  §3.2 and `manuscript_discrepancies.md` item 2.
 - **MR clumping parameters** — supplied by the clumping self-check after the first
   inventory: `clump_kb = 10000`, `clump_r2 = 0.001`, `clump_p = 5e-8`, `pop = "EUR"`.
   See §9.
 - **Marker-restricted MuSiC** — present in the bulk-gate file; identified on the second
   read. See `code_inventory_raw.md` §3.2.
+- **HPA version and access date** — the generated table was obtained and searched: it
+  records neither, and contains no year at all. The manuscript's version and both
+  candidate dates come from outside the artifact. Not an error, but it needs confirming
+  because the manuscript and the supplementary notes disagree with each other. See §7.

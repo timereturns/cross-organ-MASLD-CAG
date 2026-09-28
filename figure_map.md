@@ -57,7 +57,7 @@ documented rather than hidden — see `docs/manuscript_discrepancies.md`.
 
 ⚠️ **The Fig S2 block rewrites its own input.** It reads
 `B_b4_compare.csv`, appends two hand-typed columns (`verdict`, `note`), and writes the
-file back in place. See `docs/manuscript_discrepancies.md` §12 — this is
+file back in place. See `docs/manuscript_discrepancies.md` §13 — this is
 **the** reproducibility hazard in the repository, and the reason those two columns exist
 in the published Table S32.
 

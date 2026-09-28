@@ -9,23 +9,83 @@ Status key: **OPEN** = needs author confirmation before submission ·
 
 ---
 
-## 1. Permutation testing: seed and count — OPEN
+## 1. "20,000 permutations" — a misnomer. There is no permutation analysis — OPEN
 
-The manuscript Introduction refers to permutation testing. The Code availability
-statement promises "the random seeds used for permutation testing". Supplementary
-Table S02 is titled *"Leave-one-dataset-out exact RRA (20,000 permutations)"*.
+**Corrected after a targeted re-audit.** An earlier version of this item described a missing
+permutation script. That was wrong: **the analysis contains no Monte Carlo step at all**, so
+nothing is missing.
 
-- The **only** seeds in the entire codebase are `set.seed(20260914)` at
-  `第一次预审稿文件处理.R` lines 206 and 352.
-- Both of those blocks compute the **AUC bootstrap** with `B <- 2000` (lines 251, 404),
-  which feeds Table S39, not Table S02.
-- **No permutation loop exists anywhere.**
+The manuscript Methods describes **"20,000 rank-permutation replicates"**, and Supplementary
+Table S02 is titled *"Leave-one-dataset-out exact RRA (20,000 permutations)"*. Both describe
+the same procedure — and **that procedure performs no permutations.**
 
-→ Confirm: is the permutation seed `20260914`? Is the count 20,000? And where is the
-script? Until this is settled, the phrase "the random seeds used for permutation
-testing" in the Code availability statement cannot be substantiated.
+### What the code actually does
 
-## 2. RRA background size — OPEN
+```r
+# 磁盘层执行脚本2026.9.12 16 56.R, lines 31-37
+rra_rho <- function(r, denom) {
+  r <- as.numeric(r); r <- r[!is.na(r)]
+  if (length(r) < 2) return(NA_real_)
+  if (length(denom) == 1) denom <- rep(denom, length(r))
+  x <- sort(r / denom); n <- length(x)
+  min(vapply(seq_len(n), function(k) pbeta(x[k], k, n - k + 1), numeric(1)))
+}
+```
+
+```
+line 45   cal_200 <- rra_rho(r_up[i, rnk_cols], 20000)     # background = 20,000
+line 51   use_N20000 <- TRUE
+line 52   den_lodo <- function(k) rep(20000, k)
+line 67   full_sc <- apply(mat, 1, rra_rho, denom = den_lodo(ncol(mat)))
+line 72   sc <- apply(mat[, -j], 1, rra_rho, denom = den_lodo(ncol(mat) - 1))
+line 76   out[[paste0("in200_drop_", ...)]] <- rk[genes] <= 200
+line 77   out[[paste0("lt001_drop_", ...)]] <- sc[genes] < 0.01
+```
+
+`20000` is the **background gene count `N`**, passed as the denominator of a closed-form
+Beta-distribution p-value. The audit drops one cohort at a time and recomputes —
+**six iterations, not 20,000.** Every output is a deterministic function of the input ranks.
+
+### Full-tree search for a resampling step
+
+Across all original files, searching `set.seed`, `permut`, `置换`, `sample(`, `replicate(`,
+`runif`, `rnorm`, `rmultinom`:
+
+| Location | What it is |
+|---|---|
+| `第一次预审稿文件处理.R` L206, L352 | `set.seed(20260914)` |
+| `第一次预审稿文件处理.R` L255–257 | `replicate(B, { b1 <- sample(i1, …); b0 <- sample(i0, …) })` with `B <- 2000` — the **AUC bootstrap** (Table S39) |
+| `第一次预审稿文件处理.R` L408–409 | the same bootstrap, repeated for a second cohort |
+| three MR scripts, e.g. `eQTLGen… 第三次跑` L126 | `run_mr_presso(..., NbDistribution = 1000)` — **MR-PRESSO** |
+| `第一次预审稿文件处理.R` L442 | the title string itself |
+
+**No permutation loop exists, because none was needed.** `set.seed(20260914)` belongs to the
+AUC bootstrap; it was never a permutation seed.
+
+### Why this is good news, not a gap
+
+1. **The LODO table is fully reproducible from this repository.** A closed-form procedure
+   needs no seed. Quoting a seed would have been the weaker position.
+2. **No analysis is missing.** The earlier "script could not be recovered" framing was
+   wrong; `repository_scope.md` §2, `code_inventory_raw.md` §3.1 and the README have all
+   been corrected.
+3. The defect is **wording**, not results. No statistic changes.
+
+### But the wording must be fixed, in three places
+
+| Where | Current | Should be |
+|---|---|---|
+| **Methods** | "20,000 rank-permutation replicates" | the exact robust rank aggregation, recomputed with each discovery cohort removed in turn, at a background of 20,000 genes |
+| **Table S02 title** | "Leave-one-dataset-out exact RRA (20,000 permutations)" | "… (background N = 20,000)" |
+| **Code availability** | "…and the random seeds used for permutation testing." | remove the clause — no permutation testing is performed. Replace with parameters that do matter: RRA background size, closed-form P-value implementation, minimum-cell pseudobulk threshold, Bonferroni threshold — all documented in this repository |
+
+**Why this matters more than it looks.** A reviewer who reads "permutation testing", then
+opens the repository and finds no permutation step, must choose between two readings: the
+code is incomplete, or the manuscript describes the method wrongly. The first is a
+rejection risk. Leaving the phrase in converts a labelling slip into an apparent
+reproducibility failure — and the fix costs one sentence.
+
+## 3. RRA background size — OPEN
 
 The manuscript states the robust rank aggregation background size as **20,000 genes**.
 
@@ -51,7 +111,7 @@ from the discovery run, the background was the runtime union, and the manuscript
 "20,000" describes the audit re-computation only. The README should state both numbers
 and say which analysis each belongs to.
 
-## 3. Cell-type count: 8 or 9 — OPEN
+## 4. Cell-type count: 8 or 9 — OPEN
 
 The Bonferroni threshold is stated as **P = 4.8 × 10⁻⁴**, derived from 13 genes ×
 **8 cell types** = 104 tests. Arithmetic checks out: 0.05 / 104 = 4.8077 × 10⁻⁴. ✓
@@ -70,7 +130,7 @@ But the code uses different numbers of cell types in different places:
 README must state them explicitly, because "13 × 8" is a checkable claim and the code
 does not contain a single place where both numbers appear together.
 
-## 4. Fibrosis pseudobulk threshold — OPEN
+## 5. Fibrosis pseudobulk threshold — OPEN
 
 The manuscript describes a "pre-specified pseudobulk threshold" of ≥20 cells per
 patient and cell type.
@@ -89,7 +149,7 @@ stage_counts <- function(gene, ct, pb, ncell, min_cells = 20)   # line 790
 centralises it in `R/00_setup.R` as `MIN_CELLS_PER_PATIENT_CELLTYPE <- 20L`. Worth
 noting in the README that the value is uniform across analyses.
 
-## 5. 13 vs 14 genes in the single-cell localisation — DOC
+## 6. 13 vs 14 genes in the single-cell localisation — DOC
 
 `跑 compact 版三件套` line 8 reads `genes14 <- cc$genes_present # 13 个` — the variable
 is named `genes14` but holds **13** genes. The comment flags it, so this appears to be
@@ -99,7 +159,7 @@ known. Later `genes14` vectors in the same file and in `P2 开始` do contain 14
 The README should state which gene was missing and from which dataset, rather than
 leaving a variable whose name contradicts its contents.
 
-## 6. Human Protein Atlas: version and access date — OPEN, now with evidence
+## 7. Human Protein Atlas: version and access date — OPEN, now with evidence
 
 The version and access date claimed in the manuscript appear **nowhere in the generated
 artifact**. The original `p4_HPA_protein_check.csv` was obtained and searched
@@ -127,7 +187,7 @@ Two conflicting dates are nonetheless recorded elsewhere:
 manuscript — version numbers are normally tracked outside the output file — but the claim
 is currently unverifiable from the repository, and the two dates contradict each other.
 
-## 7. HPA protein table is hand-entered — OPEN
+## 8. HPA protein table is hand-entered — OPEN
 
 `落盘 最终核对表` builds `p4_HPA_protein_check.csv` as a `data.frame` literal: every
 protein level, cell-type string, antibody ID and reliability grade is typed by hand.
@@ -147,7 +207,7 @@ Two specific weaknesses in that table:
 provenance. Reviewers accept curated annotation tables; they do not accept tables that
 contradict themselves.
 
-## 8. Scoring matrix: two hard-coded dimensions — OPEN
+## 9. Scoring matrix: two hard-coded dimensions — OPEN
 
 The 8-dimension scoring matrix (`P2 开始`, `p2_scoring_matrix.csv`) computes dimensions
 A–F from data but **G (`G_Novelty`) and H (`H_Verifiability`) are literals typed by the
@@ -166,7 +226,7 @@ explaining that G and H are author-assigned expert scores, not derived quantitie
 reviewer seeing a "transparent 8-dimension scoring matrix" (Table S11) will otherwise
 assume all eight dimensions are computed.
 
-## 9. Contradiction between two Supplementary NOTES variants — OPEN
+## 10. Contradiction between two Supplementary NOTES variants — OPEN
 
 `落盘 最终核对表` contains two successive versions of the workbook's NOTES sheet that
 say **opposite** things about the single not-estimable MR pair:
@@ -180,7 +240,7 @@ Both describe `TableS24`. Whichever block ran last decides the published text.
 → Confirm the correct statement and delete the stale variant. This is a live
 inconsistency inside a submitted supplementary file, not merely in the code.
 
-## 10. Audit checks that do not assert — OPEN
+## 11. Audit checks that do not assert — OPEN
 
 `结果部分确认2026.9.14 19 23.R` performs **no** numeric verification: it prints values
 for the author to eyeball. It contains no `stopifnot`. One of its checks has a stated
@@ -196,7 +256,7 @@ the same CSV — one of the two must silently return nothing.
 published repository, or replaced by a script with real assertions. The pass/fail checks
 that matter are already asserted in `磁盘层执行脚本` and `第一次预审稿文件处理`.
 
-## 11. Third-party code provenance — OPEN, BLOCKING
+## 12. Third-party code provenance — OPEN, BLOCKING
 
 See `docs/code_inventory_raw.md` §4. The file that performs the liver-side download,
 limma differential expression and RRA discovery carries a vendor notice threatening
@@ -206,7 +266,7 @@ retraction for unauthorised use. Must be resolved by the author before publicati
 The affected script is held out of the public repository, and the scope limitation is
 stated in the README. See `docs/repository_scope.md`.
 
-## 12. `B_b4_compare.csv` was edited outside R — OPEN, CRITICAL
+## 13. `B_b4_compare.csv` was edited outside R — OPEN, CRITICAL
 
 This is the single biggest reproducibility hazard found in the deconvolution code.
 
@@ -234,7 +294,7 @@ machine-generated from the pipeline. Either add `verdict`/`note` to the generati
 so the CSV is reproducible, or document explicitly in the README that these two columns
 are curator annotations appended after the analysis.
 
-## 13. Table S35 rows are transcribed from a console log — OPEN
+## 14. Table S35 rows are transcribed from a console log — OPEN
 
 Several rows of the deconvolution QC table are **typed into the script as literals**,
 with the source labelled "recorded from run log":
@@ -268,7 +328,7 @@ at lines 1277–1285; only the summary numbers are transcribed. The README shoul
 Table S35 rows are computed and which are transcribed, so a reviewer reading the QC record
 knows what re-running would verify.
 
-## 14. Marker panel size "400" is unverifiable — OPEN
+## 15. Marker panel size "400" is unverifiable — OPEN
 
 Table S34's title and NOTE 15 both state **400 specificity-selected genes**. The code
 builds the panel as `unique(unlist(top-50-per-cell-type))` (line 344), so duplicates
@@ -282,7 +342,7 @@ earlier run.
 → Record the actual `length(markers)` in the repository, or restate Table S34's title to
 match the true count. This is a one-line fix with a checkable number attached.
 
-## 15. Two conflicting definitions of `theta` in one file — OPEN
+## 16. Two conflicting definitions of `theta` in one file — OPEN
 
 `第 2 步 v4 …` computes the reference signature fraction two different ways, under the
 same variable name:
@@ -300,7 +360,7 @@ patients.
 the README. This is exactly the class of ambiguity the "documented in the repository"
 promise in the Code availability statement is meant to cover.
 
-## 16. Four-arm comparison: no arm 4 identifier, and Fig S2 is unreferenced — DOC
+## 17. Four-arm comparison: no arm 4 identifier, and Fig S2 is unreferenced — DOC
 
 - The code defines `arm1_*`, `arm2_*`, `arm3_*` only. **No `arm4*` identifier exists.**
   The "four-arm" phrasing appears only as prose, and the fourth arm is
@@ -316,7 +376,7 @@ promise in the Code availability statement is meant to cover.
 → All three are documentation items. The "four-arm" label is defensible once the four
 estimates are enumerated.
 
-## 17. Supplementary workbook is built by positional indices — DOC
+## 18. Supplementary workbook is built by positional indices — DOC
 
 `Supplementary_Tables_v2.xlsx` is assembled by assuming the exact shape of a workbook
 built in a different file:
@@ -335,7 +395,7 @@ empty (`# ---- L0. 确认"备好脚本"第二个是否真空 ----`, line 732).
 → The published repository should not depend on positional workbook state. The README
 should state the expected sheet and row counts as preconditions.
 
-## 18. GSE174478 is analysed but missing from Data availability — OPEN
+## 19. GSE174478 is analysed but missing from Data availability — OPEN
 
 The deconvolution sensitivity analysis uses **four** bulk cohorts:
 
@@ -369,7 +429,7 @@ Two related framing points from the same NOTES entry, worth checking in the manu
   is on a different scale from the other three cohorts. Figure S2 shows this with a
   dagger rather than labelling the axis as stage units.
 
-## 19. Figure renames were done outside R — DOC
+## 20. Figure renames were done outside R — DOC
 
 Three figures were renamed by hand between the script's output filename and the
 submitted filename: `fig1_localization_heatmap.png` → Fig 3,

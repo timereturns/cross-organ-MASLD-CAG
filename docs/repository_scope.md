@@ -55,29 +55,36 @@ This is a scoping decision, not a claim that the excluded material is unavailabl
 author can provide it to the editors and reviewers on request, as the Nature Portfolio
 code policy provides.
 
-### 2. Permutation analysis
+### 2. Resampling — there is none
 
-The manuscript refers to permutation testing, and Table S02 carries the title
-*"Leave-one-dataset-out exact RRA (20,000 permutations)"*. The seed used for the
-stochastic procedures in this project was `20260914`.
+This section previously listed a permutation analysis as not included. **That was based on
+a misreading and has been corrected: the analysis contains no Monte Carlo step.**
 
-The standalone script that generated the permutation table was not retained and could
-not be recovered at the time this repository was assembled. What **is** present:
+The manuscript Methods refers to *"20,000 rank-permutation replicates"* and Table S02 is
+titled *"Leave-one-dataset-out exact RRA (20,000 permutations)"*. Both describe **the same
+deterministic procedure**:
 
-- the exact leave-one-dataset-out procedure it builds on (`R/05_audit_LODO_meta.R`),
-  which recomputes the robust rank aggregation with each of the six discovery cohorts
-  removed in turn, using the closed-form P-value implementation
+- `R/05_audit_LODO_meta.R` recomputes the robust rank aggregation with each of the six
+  discovery cohorts removed in turn, using the closed-form P-value implementation
   `min_k pbeta(x_(k); k, n − k + 1)`;
-- the output table it produced (`results/tables/p0_lodo_exact_rra.csv`), with per-cohort
-  retention columns `in200_drop_*` (rank ≤ 200 after dropping that cohort) and
-  `lt001_drop_*` (P < 0.01 after dropping that cohort).
+- it produces `results/tables/p0_lodo_exact_rra.csv`, with per-cohort retention columns
+  `in200_drop_*` (rank ≤ 200 after dropping that cohort) and `lt001_drop_*` (P < 0.01
+  after dropping that cohort);
+- **20,000 is the background gene count `N`, not an iteration count.** In the code it is
+  the denominator passed to the closed-form function.
 
-The permutation table can therefore be checked against the LODO table; what cannot be
-re-run is the permutation resampling itself.
+Nothing is resampled, so nothing was lost and there is no seed to quote. **The LODO table
+is fully reproducible from this repository**, which is a stronger position than having a
+seed would be.
 
-**This limitation is stated in the Code availability statement.** The statement does not
-claim that every script is present — it points to the repository as the record of the
-analysis and its parameters.
+The only defect is the label, in three places: the Methods text, the Table S02 title, and
+the Code availability statement's promise of "the random seeds used for permutation
+testing". None should refer to permutation. See `manuscript_discrepancies.md` item 1 for
+the specific rewording.
+
+The one genuinely stochastic procedure in the project is the **AUC bootstrap** for the
+GSE135251 validation (2,000 resamples, seed `20260914`), which is fully implemented in
+`R/07_validation_GSE135251.R`.
 
 ### 3. Preprocessing of single-cell datasets
 
@@ -125,7 +132,7 @@ produced the reported results — the decision is documented in
 5. Which figure came from which script (`figure_map.md`).
 6. Which numbers in the supplementary tables are computed by code and which are
    curator annotations transcribed from a run log — see
-   `docs/manuscript_discrepancies.md` §13.
+   `docs/manuscript_discrepancies.md` §14.
 
 ## Known limitations, stated rather than hidden
 

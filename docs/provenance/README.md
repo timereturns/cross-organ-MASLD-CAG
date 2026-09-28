@@ -74,4 +74,4 @@ for all five genes, including CADM2, whose own `stomach_level` is
 level reads not detected. The reconstruction **does not change the value** — silently
 "fixing" curated data would alter a published table — but it flags the row at run time so
 the inconsistency is visible rather than discovered. See
-`../manuscript_discrepancies.md` item 7.
+`../manuscript_discrepancies.md` item 8.
