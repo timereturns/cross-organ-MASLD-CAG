@@ -13,40 +13,64 @@
 # grades are the product of human curation too. What matters is that a reader can
 # tell it apart from a computed result.
 #
-# THREE THINGS THE ORIGINAL DID NOT SETTLE, all marked below:
+# THREE THINGS THE ORIGINAL DID NOT SETTLE, all handled below:
 #
 #   1. VERSION. The manuscript states HPA version 25.0. That number appears
-#      nowhere in the code. It is carried here as a variable so the two can be
-#      reconciled, but it has not been verified against a retrieval record.
+#      nowhere in the code or in the generated table. Worse, it cannot have been
+#      the version in force: HPA released 25.1 on 2026-05-25, and the annotations
+#      were made on 2026-09-14. So the release actually open during curation was
+#      25.1, and the citation names the wrong one. See R/16_verify_hpa_version.R
+#      for the check that settles whether it changes any of the five genes.
 #
-#   2. ACCESS DATE. The manuscript says 5 September 2026. The supplementary NOTES
-#      say 2026-09-13. Both are recorded below and the script reports the
-#      disagreement rather than picking one.
+#   2. ACCESS DATE. Three values have been in play - the manuscript says
+#      2026-09-05, the supplementary NOTES say 2026-09-13, and the author has since
+#      confirmed 2026-09-14. The confirmed date is recorded as such below, and the
+#      script reports the disagreement rather than quietly picking one.
 #
 #   3. ONE CELL CONTRADICTS ITSELF. `stomach_cells` is the constant string
 #      "Glandular cells" for all five genes, including CADM2 whose own
-#      `stomach_level` is "Not detected". The script now flags any gene whose
+#      `stomach_level` is "Not detected". The script flags any gene whose
 #      cell-type string asserts a localisation while its level says not detected,
 #      so the contradiction surfaces at run time instead of sitting unnoticed in a
 #      submitted table. The value itself is NOT changed: silently "fixing" curated
 #      data would alter a published table.
+#
+#      Note in the table's favour: "Glandular cells" IS a standard HPA cell-type
+#      group value, appearing verbatim in HPA's own search vocabulary. The
+#      attribution is HPA-consistent usage; the problem is that it is applied to a
+#      gene whose level reads not detected.
 #
 # Run:  Rscript R/12_HPA_check.R
 # =============================================================================
 
 source("R/00_setup.R")
 
-# --- the two contested metadata fields ---------------------------------------
-HPA_VERSION      <- "25.0"          # manuscript; unverified against a record
-HPA_ACCESS_MANUSCRIPT <- "2026-09-05"
-HPA_ACCESS_NOTES      <- "2026-09-13"
+# --- contested metadata -------------------------------------------------------
+# The version cited in the manuscript versus the version actually in force on the
+# confirmed access date. Both are carried so the discrepancy is visible rather than
+# resolved by assumption.
+HPA_VERSION            <- "25.0"          # cited in the manuscript
+HPA_VERSION_IN_FORCE   <- "25.1"          # released 2026-05-25; live on the access date
+HPA_ACCESS_MANUSCRIPT  <- "2026-09-05"    # manuscript Data availability text
+HPA_ACCESS_NOTES       <- "2026-09-13"    # supplementary NOTES sheet
+HPA_ACCESS_CONFIRMED   <- "2026-09-14"    # author-confirmed actual access date
 
 if (HPA_ACCESS_MANUSCRIPT != HPA_ACCESS_NOTES) {
-  warning("[12] HPA access date disagrees between the manuscript and the ",
-          "supplementary notes:\n",
-          "  manuscript: ", HPA_ACCESS_MANUSCRIPT, "\n",
-          "  notes:      ", HPA_ACCESS_NOTES, "\n",
-          "  Reconcile before submission.", call. = FALSE)
+  warning("[12] HPA access date has three values in play:\n",
+          "  manuscript:          ", HPA_ACCESS_MANUSCRIPT, "\n",
+          "  supplementary NOTES: ", HPA_ACCESS_NOTES, "\n",
+          "  author-confirmed:    ", HPA_ACCESS_CONFIRMED, "\n",
+          "  Use the confirmed date in both places.", call. = FALSE)
+}
+
+if (HPA_VERSION != HPA_VERSION_IN_FORCE) {
+  warning("[12] HPA version cited (", HPA_VERSION, ") is not the version that was ",
+          "live on the access date (", HPA_VERSION_IN_FORCE, ", released ",
+          "2026-05-25).\n",
+          "  Write ", HPA_VERSION_IN_FORCE, ", then compare the five genes across ",
+          "both releases at vX.proteinatlas.org\n",
+          "  to confirm the annotation is unchanged. ", 
+          "See R/16_verify_hpa_version.R.", call. = FALSE)
 }
 
 # --- the curated table --------------------------------------------------------
@@ -92,9 +116,13 @@ stopifnot(nrow(hpa) == 5L,
           all(hpa$gene %in% candidates_main))
 
 # --- provenance columns -------------------------------------------------------
-hpa$hpa_version <- HPA_VERSION
-hpa$access_date <- HPA_ACCESS_MANUSCRIPT
-hpa$provenance  <- "curator-assigned; no programmatic HPA query"
+# The version is recorded as the one IN FORCE on the access date, not the one the
+# manuscript cites, so the output states what the annotation actually reflects.
+# The cited version is kept alongside it so the discrepancy travels with the table.
+hpa$hpa_version_used  <- HPA_VERSION_IN_FORCE
+hpa$hpa_version_cited <- HPA_VERSION
+hpa$access_date       <- HPA_ACCESS_CONFIRMED
+hpa$provenance        <- "curator-assigned; no programmatic HPA query"
 
 # --- consistency flag ---------------------------------------------------------
 # A gene whose level says "Not detected" cannot also have a cell type attributed
@@ -140,8 +168,14 @@ message("[12] IL32 reliability is '", il32$reliability,
         " -- these are consistent only if read as 'protein evidence exists but ",
         "the localisation does not settle the question'")
 
-message("[12] version ", HPA_VERSION, " is stated in the manuscript but was not ",
-        "recorded during curation; verify it against the site before submission")
+message("[12] version: manuscript cites ", HPA_VERSION,
+        "; the release in force on ", HPA_ACCESS_CONFIRMED, " was ",
+        HPA_VERSION_IN_FORCE, " (released 2026-05-25).")
+message("[12]   the output records BOTH, so the table states what it reflects ",
+        "and what it is cited as.")
+message("[12]   next: compare the five genes across v25 and 25.1 at ",
+        "vX.proteinatlas.org. If unchanged, the citation is the only fix.")
+message("[12]   run R/16_verify_hpa_version.R to record what the site reports.")
 
 # -----------------------------------------------------------------------------
 # Write

@@ -277,14 +277,43 @@ discrimination performance.
 
 | Item | Value |
 |---|---|
-| Version | **25.0** — stated in the manuscript. **Absent from the curator table and from all code.** |
-| Accessed | manuscript: **2026-09-05** · supplementary notes: **2026-09-13** — `[CONFIRM]` |
+| **Version cited in the manuscript** | **25.0** — see the timeline below; the release in force on the access date was 25.1 |
+| **Version actually current on the access date** | **25.1**, released **2026-05-25** |
+| **Accessed** | **2026-09-14** — author-confirmed. The manuscript says 2026-09-05; the supplementary NOTES say 2026-09-13 |
 | Genes | IL32, ANXA4, CDHR2, CADM2, LGALS3 (the 5 retained candidates) |
 | Method | **Manual curation, hand-typed into a `data.frame`.** No programmatic HPA query. |
 | Antibodies recorded | IL32 HPA029397, CAB030029 · ANXA4 HPA007393, CAB005076, CAB017560 · CDHR2 HPA012569, HPA017053 · CADM2 HPA010024 · LGALS3 HPA003162, CAB005191 — **10 identifiers** |
 | Fields per gene | liver level, liver cell types, stomach level, stomach cell types, tissue specificity, antibody IDs, reliability grade, author verdict — **9 columns** |
 | Output | `p4_HPA_protein_check.csv`, published as Table S27 |
 | Reliability vocabulary | HPA grades: Enhanced / Supported / Approved / Uncertain / Enhanced (orthogonal) |
+
+### ⚠️ Version versus access date — the citation does not match the date
+
+Checked against HPA's own release history:
+
+| Release | Date | Source |
+|---|---|---|
+| version 25 | 2025-11-11 | announced at HUPO, Toronto |
+| **version 25.1** | **2026-05-25** | HPA release history — *"Twenty-fifth major release"* |
+| current release at the time of checking | 25.1 | HPA home page |
+
+The annotations were made on **2026-09-14**. By then 25.1 had been live for nearly four
+months, so whatever was on screen during curation was **25.1** — the manuscript's
+"version 25.0" does not name it.
+
+**Two readings, needing different fixes:**
+
+- If "25.0" is shorthand for the version 25 *family* — 25.0 and 25.1 share the major
+  number — the intent is defensible but the citation is imprecise. Write **25.1**.
+- If "25.0" was meant literally as `v25.proteinatlas.org`, the citation points at a
+  release superseded before the access date, and the five genes need re-checking against
+  25.1.
+
+HPA hosts older releases at `vX.proteinatlas.org`, so the two can be compared directly.
+**That comparison is the decisive check:** if the five genes' tissue levels, cell-type
+attributions and antibody reliability grades are unchanged between 25.0 and 25.1, the
+citation is corrected to 25.1 with no analysis change needed. `R/16_verify_hpa_version.R`
+documents the procedure and prints what the site currently reports.
 
 ### What the curator table does and does not record — verified
 
@@ -293,22 +322,31 @@ The **generated artifact** was obtained and inspected
 **exactly 9 columns**, matching the eight HPA fields plus the author verdict. It contains:
 
 - **no version number** — the string `25.0` does not appear
-- **no access date** — neither `2026-09-05` nor `2026-09-13` appears
+- **no access date** — none of the three candidate dates appears
 - **no year at all** — the string `2026` does not appear anywhere in the file
 
-So the manuscript's "version 25.0" and *both* candidate access dates come from outside this
-artifact. They are not wrong; they are simply not corroborated by it. Before submission,
-confirm the version against the site and pick one access date, because the manuscript and
-the supplementary notes currently disagree (item 7 of `manuscript_discrepancies.md`).
+So the manuscript's version and any access date come from outside this artifact. HPA
+versions are normally tracked outside an analysis output, so this is not an error in
+itself — but the citation is uncorroborated by the artifact, and one element of it is now
+known to be inconsistent with the confirmed access date.
 
 The reconstruction in `R/12_HPA_check.R` reproduces the artifact's 9 columns exactly, then
 adds four columns — `hpa_version`, `access_date`, `provenance` and
-`flag_stomach_contradiction` — so that the provenance of every value is explicit.
+`flag_stomach_contradiction` — so the provenance of every value is explicit.
 
-### The one self-contradictory cell
+### One point in the table's favour
 
-`stomach_cells` is the constant `"Glandular cells"` for all five genes, applied to CADM2
-whose own `stomach_level` is `"Not detected (raw Low)"`. The script now flags this at run
+`"Glandular cells"` is **not** an ad-hoc string. It is a **standard HPA cell-type group
+value**, appearing verbatim in HPA's own search vocabulary alongside groups such as
+hepatocytes and smooth muscle cells. Using it as a cell-type attribution is HPA-consistent
+usage, not a typo.
+
+### The remaining problem is narrower
+
+`"Glandular cells"` is applied uniformly to all five genes, including CADM2, whose own
+`stomach_level` reads `"Not detected (raw Low)"`. A gene cannot be attributed to a cell
+type while its level reads not detected. The value is **not changed** here — silently
+editing curated data would alter a published table — but the script flags the row at run
 time. See `manuscript_discrepancies.md` item 8.
 
 ---

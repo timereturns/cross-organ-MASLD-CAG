@@ -60,6 +60,7 @@ Rscript R/11_MR_exploratory.R       # before 10 if regenerating dimension F
 Rscript R/12_HPA_check.R
 Rscript R/13_figures.R
 Rscript R/14_fig5_redraw.R          # Fig 5, from the authoritative stage table
+Rscript R/16_verify_hpa_version.R   # HPA release check (needs internet; optional)
 ```
 
 | Script | Depends on |
@@ -184,7 +185,7 @@ data/
 | eQTLGen cis-eQTLs | https://www.eqtlgen.org | _(fill in)_ |
 | GTEx v10 | https://gtexportal.org | _(fill in)_ |
 | OpenGWAS / MR-Base | https://gwas.mrcieu.ac.uk | _(fill in)_ |
-| Human Protein Atlas v25.0 | https://www.proteinatlas.org | **2026-09-05** (manuscript) / 2026-09-13 (code) — see §6 |
+| Human Protein Atlas | https://www.proteinatlas.org | **2026-09-14** (author-confirmed); cited as v25.0, release in force was **25.1** — see §6 |
 
 ---
 
@@ -270,11 +271,21 @@ log, and two columns of the four-arm comparison table (`verdict`, `note`) were a
 by hand. `docs/manuscript_discrepancies.md` §13–14 lists which rows are computed and
 which are transcripts.
 
-**The Human Protein Atlas table is manually curated.** `R/11_HPA_check.R` holds the
+**The Human Protein Atlas citation names the wrong release.** The manuscript cites
+version 25.0. HPA released **25.1 on 2026-05-25**, and the annotations were made on the
+author-confirmed access date of **2026-09-14** — so the release in force during curation
+was 25.1. Fix the citation, then compare the five genes across `v25` and 25.1 at
+`vX.proteinatlas.org`: if the tissue levels, cell-type attributions and antibody
+reliability grades are unchanged, the citation is the only fix needed. The access date
+also needs correcting — the manuscript says 2026-09-05 and the supplementary notes say
+2026-09-13, against a confirmed 2026-09-14. `R/16_verify_hpa_version.R` records the check.
+See `docs/manuscript_discrepancies.md` item 7.
+
+**The Human Protein Atlas table is manually curated.** `R/12_HPA_check.R` holds the
 protein levels, cell-type strings, antibody IDs and reliability grades as typed values;
-there is no programmatic HPA query. The version (25.0) appears in the manuscript but not
-in the code, and the recorded access dates differ between the two (2026-09-05 vs
-2026-09-13).
+there is no programmatic HPA query. That is a legitimate way to build an annotation table —
+HPA's own reliability grades are human curation too — and the output now carries provenance
+columns saying so.
 
 **Some single-cell preprocessing is not reproduced here.** The compact analysis object
 for GSE202379 and the deconvolution reference were produced in earlier sessions; the
@@ -316,7 +327,8 @@ See `docs/manuscript_discrepancies.md`.
 │   ├── 11_MR_exploratory.R        two-sample MR (the reported v4 configuration)
 │   ├── 12_HPA_check.R             protein annotation table
 │   ├── 13_figures.R               Figures 1-4, S1, S2
-│   └── 14_fig5_redraw.R           Figure 5, from the authoritative stage table
+│   ├── 14_fig5_redraw.R           Figure 5, from the authoritative stage table
+│   └── 16_verify_hpa_version.R    verifies the cited HPA release against the site
 ├── data/
 │   └── datasets.md                accessions, platforms, dates
 ├── results/

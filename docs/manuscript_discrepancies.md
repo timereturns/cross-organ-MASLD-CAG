@@ -159,11 +159,11 @@ known. Later `genes14` vectors in the same file and in `P2 开始` do contain 14
 The README should state which gene was missing and from which dataset, rather than
 leaving a variable whose name contradicts its contents.
 
-## 7. Human Protein Atlas: version and access date — OPEN, now with evidence
+## 7. Human Protein Atlas: version inconsistent with the access date — OPEN
 
 The version and access date claimed in the manuscript appear **nowhere in the generated
-artifact**. The original `p4_HPA_protein_check.csv` was obtained and searched
-(kept at `docs/provenance/p4_HPA_protein_check_as_generated.csv`, sha256 `a6c27264…`):
+artifact**. The original `p4_HPA_protein_check.csv` was obtained and searched (kept at
+`docs/provenance/p4_HPA_protein_check_as_generated.csv`, sha256 `a6c27264…`):
 
 | Search | Result |
 |---|---|
@@ -176,16 +176,47 @@ artifact**. The original `p4_HPA_protein_check.csv` was obtained and searched
 The file has nine columns — the eight HPA fields plus the author verdict — and records
 neither a version nor a retrieval date nor even a year.
 
-Two conflicting dates are nonetheless recorded elsewhere:
+Three dates have been in play, and the author has confirmed the third:
 
 | Source | Date |
 |---|---|
-| Manuscript Data availability text | **5 September 2026** |
-| `落盘 最终核对表` NOTES sheet (both variants) | **2026-09-13** |
+| Manuscript Data availability text | 5 September 2026 |
+| `落盘 最终核对表` NOTES sheet (both variants) | 2026-09-13 |
+| **Author-confirmed actual access** | **2026-09-14** |
 
-→ Confirm the HPA release number and pick one access date. This is not an error in the
-manuscript — version numbers are normally tracked outside the output file — but the claim
-is currently unverifiable from the repository, and the two dates contradict each other.
+### The version does not match the access date
+
+Checked against HPA's own release history:
+
+| Release | Date |
+|---|---|
+| version 25 | 2025-11-11, announced at HUPO Toronto |
+| **version 25.1** | **2026-05-25** — *"Twenty-fifth major release"* |
+| current release at time of checking | 25.1 |
+
+The annotations were made on **2026-09-14**. Version **25.1** had been live for nearly four
+months by then, so the release actually in force during curation was 25.1 — **not** the
+"25.0" the manuscript cites.
+
+→ **Fix the citation:** write **25.1**, and set the access date to **14 September 2026**, in
+the manuscript Data availability statement *and* in the supplementary NOTES (which currently
+say 09-13).
+
+→ **Then check whether it changes anything.** HPA hosts superseded releases at
+`vX.proteinatlas.org`, so `v25` and the current 25.1 can be compared directly. Compare each
+of the five genes on: liver level, stomach level, attributed cell types, and antibody
+reliability grade. If all are identical, the citation is corrected with no analysis change.
+If any differ, the table needs rebuilding against the correct release.
+
+This is the cheapest high-value check remaining. `R/16_verify_hpa_version.R` prints what
+the site currently reports and records the result in
+`results/tables/p4_HPA_version_verification.csv`.
+
+**One thing the table gets right.** `"Glandular cells"` is a standard HPA **cell-type
+group** value, not an invented string — it appears verbatim in HPA's own search vocabulary
+alongside groups such as hepatocytes and smooth muscle cells. So the attribution is
+HPA-consistent usage; the problem is narrower than it first looked, and is described in
+item 8.
 
 ## 8. HPA protein table is hand-entered — OPEN
 
