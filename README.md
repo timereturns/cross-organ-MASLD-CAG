@@ -318,7 +318,10 @@ See `docs/manuscript_discrepancies.md`.
     ├── code_inventory_raw.md      audit of the original working files
     ├── manuscript_discrepancies.md  code vs manuscript, item by item
     ├── original_scripts_manifest.md  provenance of each original file
-    └── repository_scope.md        what is in, what is out, and why
+    ├── repository_scope.md        what is in, what is out, and why
+    └── provenance/                generated artifacts kept for verification
+        ├── README.md
+        └── p4_HPA_protein_check_as_generated.csv
 ```
 
 Only `R/01_download_and_DE.R` is a re-implementation; every other script is a

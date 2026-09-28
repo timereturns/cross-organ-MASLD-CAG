@@ -238,18 +238,39 @@ discrimination performance.
 
 | Item | Value |
 |---|---|
-| Version | **25.0** (manuscript) — **not recorded anywhere in the code** |
-| Accessed | manuscript: **2026-09-05**; code NOTES: **2026-09-13** — `[CONFIRM]` |
+| Version | **25.0** — stated in the manuscript. **Absent from the curator table and from all code.** |
+| Accessed | manuscript: **2026-09-05** · supplementary notes: **2026-09-13** — `[CONFIRM]` |
 | Genes | IL32, ANXA4, CDHR2, CADM2, LGALS3 (the 5 retained candidates) |
 | Method | **Manual curation, hand-typed into a `data.frame`.** No programmatic HPA query. |
-| Antibodies recorded | IL32 HPA029397, CAB030029 · ANXA4 HPA007393, CAB005076, CAB017560 · CDHR2 HPA012569, HPA017053 · CADM2 HPA010024 · LGALS3 HPA003162, CAB005191 |
-| Fields per gene | liver level, liver cell types, stomach level, stomach cell types, tissue specificity, antibody IDs, reliability grade, author verdict |
+| Antibodies recorded | IL32 HPA029397, CAB030029 · ANXA4 HPA007393, CAB005076, CAB017560 · CDHR2 HPA012569, HPA017053 · CADM2 HPA010024 · LGALS3 HPA003162, CAB005191 — **10 identifiers** |
+| Fields per gene | liver level, liver cell types, stomach level, stomach cell types, tissue specificity, antibody IDs, reliability grade, author verdict — **9 columns** |
 | Output | `p4_HPA_protein_check.csv`, published as Table S27 |
 | Reliability vocabulary | HPA grades: Enhanced / Supported / Approved / Uncertain / Enhanced (orthogonal) |
 
-`[CONFIRM]` The table is entirely curator-assigned and one cell is self-contradictory:
+### What the curator table does and does not record — verified
+
+The **generated artifact** was obtained and inspected
+(`docs/provenance/p4_HPA_protein_check_as_generated.csv`, sha256 `a6c27264…`). It has
+**exactly 9 columns**, matching the eight HPA fields plus the author verdict. It contains:
+
+- **no version number** — the string `25.0` does not appear
+- **no access date** — neither `2026-09-05` nor `2026-09-13` appears
+- **no year at all** — the string `2026` does not appear anywhere in the file
+
+So the manuscript's "version 25.0" and *both* candidate access dates come from outside this
+artifact. They are not wrong; they are simply not corroborated by it. Before submission,
+confirm the version against the site and pick one access date, because the manuscript and
+the supplementary notes currently disagree (item 6 of `manuscript_discrepancies.md`).
+
+The reconstruction in `R/12_HPA_check.R` reproduces the artifact's 9 columns exactly, then
+adds four columns — `hpa_version`, `access_date`, `provenance` and
+`flag_stomach_contradiction` — so that the provenance of every value is explicit.
+
+### The one self-contradictory cell
+
 `stomach_cells` is the constant `"Glandular cells"` for all five genes, applied to CADM2
-whose `stomach_level` is `"Not detected (raw Low)"`. See §13, item 7.
+whose own `stomach_level` is `"Not detected (raw Low)"`. The script now flags this at run
+time. See `manuscript_discrepancies.md` item 7.
 
 ---
 

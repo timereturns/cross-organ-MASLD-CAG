@@ -1,0 +1,6 @@
+"gene","liver_level","liver_cells","stomach_level","stomach_cells","specificity","antibody","reliability","manuscript_verdict"
+"IL32","Low","Cholangiocytes Low; Hepatocytes Low","High/Medium","Glandular cells","Immune-related","HPA029397; CAB030029","Uncertain (IHC); WB Enhanced","limited: unvalidated IHC, pending annotation"
+"ANXA4","Medium","Cholangiocytes Medium-High; Hepatocytes Medium","Medium (High with 2 antibodies)","Glandular cells","GI-tract enriched","HPA007393; CAB005076; CAB017560","Enhanced (orthogonal, 3 antibodies)","strongest support: dual epithelial protein"
+"CDHR2","Medium (hepatocytes)","Hepatocytes Medium; Cholangiocytes Not detected","Medium","Glandular cells","Low tissue specificity","HPA012569; HPA017053","Supported / Enhanced","good support: hepatocyte + gastric epithelial"
+"CADM2","Not detected","Not detected (bulk IHC)","Not detected (raw Low)","Glandular cells","Brain enriched","HPA010024","Enhanced (IHC, but ND in liver)","negative-as-predicted: low-abundance stellate gene"
+"LGALS3","Low (cholangiocytes)","Cholangiocytes Low; myeloid cells by scRNA","High","Glandular cells","Low tissue specificity","HPA003162; CAB005191","Enhanced (HPA003162); Supported (CAB005191)","gastric epithelial high; liver myeloid by scRNA"

@@ -99,19 +99,33 @@ known. Later `genes14` vectors in the same file and in `P2 开始` do contain 14
 The README should state which gene was missing and from which dataset, rather than
 leaving a variable whose name contradicts its contents.
 
-## 6. Human Protein Atlas: access date — OPEN
+## 6. Human Protein Atlas: version and access date — OPEN, now with evidence
 
-Two different dates are recorded for the same HPA check:
+The version and access date claimed in the manuscript appear **nowhere in the generated
+artifact**. The original `p4_HPA_protein_check.csv` was obtained and searched
+(kept at `docs/provenance/p4_HPA_protein_check_as_generated.csv`, sha256 `a6c27264…`):
+
+| Search | Result |
+|---|---|
+| `version` | absent |
+| `25.0` | absent |
+| `2026-09-05` | absent |
+| `2026-09-13` | absent |
+| `2026` | **absent** |
+
+The file has nine columns — the eight HPA fields plus the author verdict — and records
+neither a version nor a retrieval date nor even a year.
+
+Two conflicting dates are nonetheless recorded elsewhere:
 
 | Source | Date |
 |---|---|
 | Manuscript Data availability text | **5 September 2026** |
 | `落盘 最终核对表` NOTES sheet (both variants) | **2026-09-13** |
 
-HPA version 25.0 is stated in the manuscript but appears **nowhere** in the code.
-
-→ Confirm the actual access date and reconcile the manuscript. Also record the version
-number in `data/datasets.md`.
+→ Confirm the HPA release number and pick one access date. This is not an error in the
+manuscript — version numbers are normally tracked outside the output file — but the claim
+is currently unverifiable from the repository, and the two dates contradict each other.
 
 ## 7. HPA protein table is hand-entered — OPEN
 
