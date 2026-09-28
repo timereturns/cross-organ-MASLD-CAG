@@ -151,7 +151,7 @@ every accession, platform, role and download location.
 Non-GEO sources: eQTLGen (`https://www.eqtlgen.org`), GTEx v10
 (`https://gtexportal.org`), OpenGWAS / MR-Base (`https://gwas.mrcieu.ac.uk`),
 eQTL Catalogue tabix paths (for the colocalisation follow-up), and the Human Protein
-Atlas v25.0 (`https://www.proteinatlas.org`).
+Atlas v25.1 (`https://www.proteinatlas.org`).
 
 Layout expected by the scripts:
 
@@ -186,7 +186,7 @@ data/
 | eQTLGen cis-eQTLs | https://www.eqtlgen.org | _(fill in)_ |
 | GTEx v10 | https://gtexportal.org | _(fill in)_ |
 | OpenGWAS / MR-Base | https://gwas.mrcieu.ac.uk | _(fill in)_ |
-| Human Protein Atlas | https://www.proteinatlas.org | **2026-09-14** (author-confirmed); cited as v25.0, release in force was **25.1** — see §6 |
+| Human Protein Atlas | https://www.proteinatlas.org | **2026-09-14** (author-confirmed); version **25.1** — see §6 |
 
 ---
 

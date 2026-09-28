@@ -15,7 +15,7 @@
 #
 # THREE THINGS THE ORIGINAL DID NOT SETTLE, all handled below:
 #
-#   1. VERSION. The manuscript states HPA version 25.0. That number appears
+#   1. VERSION. The manuscript cited HPA version 25.0; the author has confirmed
 #      nowhere in the code or in the generated table. Worse, it cannot have been
 #      the version in force: HPA released 25.1 on 2026-05-25, and the annotations
 #      were made on 2026-09-14. So the release actually open during curation was
@@ -49,7 +49,7 @@ source("R/00_setup.R")
 # The version cited in the manuscript versus the version actually in force on the
 # confirmed access date. Both are carried so the discrepancy is visible rather than
 # resolved by assumption.
-HPA_VERSION            <- "25.0"          # cited in the manuscript
+HPA_VERSION            <- "25.1"          # confirmed by the author; was cited as 25.0
 HPA_VERSION_IN_FORCE   <- "25.1"          # released 2026-05-25; live on the access date
 HPA_ACCESS_MANUSCRIPT  <- "2026-09-05"    # manuscript Data availability text
 HPA_ACCESS_NOTES       <- "2026-09-13"    # supplementary NOTES sheet

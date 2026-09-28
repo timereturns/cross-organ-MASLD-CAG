@@ -314,7 +314,7 @@ whole paper.
 
 | Item | Value |
 |---|---|
-| **Version cited in the manuscript** | **25.0** — see the timeline below; the release in force on the access date was 25.1 |
+| **Version** | **25.1** — author-confirmed. The manuscript previously cited 25.0; the release in force on the access date was 25.1 (see the timeline below) |
 | **Version actually current on the access date** | **25.1**, released **2026-05-25** |
 | **Accessed** | **2026-09-14** — author-confirmed. The manuscript says 2026-09-05; the supplementary NOTES say 2026-09-13 |
 | Genes | IL32, ANXA4, CDHR2, CADM2, LGALS3 (the 5 retained candidates) |
@@ -610,7 +610,7 @@ Full detail in `docs/manuscript_discrepancies.md`. Summary:
    cross-dataset liver localisation, named in section 6. The manuscript should name the
    vocabulary wherever the number appears.
 5. **HPA access date.** Manuscript 2026-09-05; code NOTES 2026-09-13.
-6. **HPA version.** 25.0 appears in the manuscript only, never in code.
+6. **HPA version — RESOLVED.** 25.1, author-confirmed (the manuscript had cited 25.0; 25.1 was the release in force on the access date).
 7. **HPA table provenance.** Hand-typed; one cell self-contradictory; no per-gene
    retrieval record.
 8. **Scoring matrix.** Dimensions G and H are hand-assigned; the retained/observation/

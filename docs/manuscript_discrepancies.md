@@ -193,7 +193,7 @@ known. Later `genes14` vectors in the same file and in `P2 开始` do contain 14
 The README should state which gene was missing and from which dataset, rather than
 leaving a variable whose name contradicts its contents.
 
-## 7. Human Protein Atlas: version inconsistent with the access date — OPEN
+## 7. Human Protein Atlas: version and access date — RESOLVED
 
 The version and access date claimed in the manuscript appear **nowhere in the generated
 artifact**. The original `p4_HPA_protein_check.csv` was obtained and searched (kept at
@@ -229,22 +229,23 @@ Checked against HPA's own release history:
 | current release at time of checking | 25.1 |
 
 The annotations were made on **2026-09-14**. Version **25.1** had been live for nearly four
-months by then, so the release actually in force during curation was 25.1 — **not** the
-"25.0" the manuscript cites.
+months by then, so 25.1 was the release in force during curation — **not** the "25.0" the
+manuscript cited.
 
-→ **Fix the citation:** write **25.1**, and set the access date to **14 September 2026**, in
-the manuscript Data availability statement *and* in the supplementary NOTES (which currently
-say 09-13).
+**Resolved (author decision):** cite **version 25.1**, accessed **14 September 2026**, in the
+manuscript Data availability statement *and* in the supplementary NOTES (which said 09-13).
+Ready-to-paste wording is in `manuscript_availability_statements.md`.
 
-→ **Then check whether it changes anything.** HPA hosts superseded releases at
-`vX.proteinatlas.org`, so `v25` and the current 25.1 can be compared directly. Compare each
-of the five genes on: liver level, stomach level, attributed cell types, and antibody
-reliability grade. If all are identical, the citation is corrected with no analysis change.
-If any differ, the table needs rebuilding against the correct release.
+**One residual assumption, worth five minutes.** The version was named after the fact, so
+the five genes should be confirmed against 25.1 rather than assumed to match. HPA hosts
+superseded releases at `vX.proteinatlas.org`, so both can be opened side by side. Check each
+gene on four fields: liver level, stomach level, attributed cell types, antibody reliability
+grade. If all four are identical across v25 and 25.1, the citation is the whole fix. If any
+differ, the table needs rebuilding — an afternoon, not a rebuild of the study.
 
-This is the cheapest high-value check remaining. `R/16_verify_hpa_version.R` prints what
-the site currently reports and records the result in
-`results/tables/p4_HPA_version_verification.csv`.
+`R/16_verify_hpa_version.R` prints what the site currently reports and records the outcome
+in `results/tables/p4_HPA_version_verification.csv`. It degrades gracefully when the network
+is unavailable and falls back to the manual procedure.
 
 **One thing the table gets right.** `"Glandular cells"` is a standard HPA **cell-type
 group** value, not an invented string — it appears verbatim in HPA's own search vocabulary

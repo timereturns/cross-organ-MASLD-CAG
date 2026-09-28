@@ -57,7 +57,7 @@
 source("R/00_setup.R")
 
 HPA_ACCESS_CONFIRMED <- "2026-09-14"   # author-confirmed
-HPA_VERSION_CITED    <- "25.0"        # manuscript; unverified
+HPA_VERSION_CITED    <- "25.1"        # author-confirmed; the manuscript had cited 25.0
 
 message("[16] manuscript cites HPA version ", HPA_VERSION_CITED,
         ", accessed ", HPA_ACCESS_CONFIRMED)

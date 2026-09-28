@@ -64,7 +64,7 @@ there. See `docs/manuscript_discrepancies.md` §19.
 | eQTLGen consortium | https://www.eqtlgen.org | Cis-eQTL instruments for the exploratory MR | _(fill in)_ |
 | GTEx Portal | v10 (https://gtexportal.org) | Additional eQTL instruments | _(fill in)_ |
 | OpenGWAS / MR-Base | https://gwas.mrcieu.ac.uk | Outcome GWAS summary statistics | _(fill in)_ |
-| Human Protein Atlas | **version 25.1** (released 2026-05-25; https://www.proteinatlas.org) — ⚠️ the manuscript cites 25.0 | Normal-tissue protein and cell-type annotation check | **2026-09-14** (author-confirmed; manuscript says 09-05, NOTES say 09-13) |
+| Human Protein Atlas | **version 25.1** (released 2026-05-25; https://www.proteinatlas.org) — ⚠️ author-confirmed | Normal-tissue protein and cell-type annotation check | **2026-09-14** (author-confirmed; manuscript says 09-05, NOTES say 09-13) |
 
 ---
 
