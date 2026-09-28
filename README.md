@@ -281,31 +281,40 @@ See `docs/manuscript_discrepancies.md`.
 ├── sessionInfo.txt                R 4.6.0 and every package version
 ├── figure_map.md                  manuscript figure -> script -> output file
 ├── R/
-│   ├── 00_setup.R                 paths, parameters, seeds, helpers
-│   ├── 01_download_and_DE.R       GEO download; limma per cohort
+│   ├── 00_setup.R                 paths, parameters, seeds, shared helpers
+│   ├── 01_download_and_DE.R       GEO download; limma per cohort  [re-implemented]
 │   ├── 02_RRA_discovery.R         rank aggregation discovery screen
-│   ├── 03_cross_organ_candidates.R  gastric concordance; 14 candidates
-│   ├── 04_assets.R                expression matrices; group vectors
+│   ├── 03_cross_organ_candidates.R  gastric concordance; the 14 candidates
+│   ├── 04_assets.R                expression matrices; group vectors; rank columns
 │   ├── 05_audit_LODO_meta.R       LODO; effect sizes; meta-analysis
 │   ├── 06_composition_adjustment.R  marker-score adjustment; batch QC
 │   ├── 07_validation_GSE135251.R  held-out validation; AUC; bootstrap CI
 │   ├── 08_singlecell_pseudobulk.R GSE202379 / GSE115469 / GSE134520
-│   ├── 09_deconvolution_MuSiC.R   bulk gate; MuSiC; marker panel; four-arm table
-│   ├── 10_MR_exploratory.R        two-sample MR
-│   ├── 11_HPA_check.R             protein annotation table
-│   ├── 12_figures.R               Figures 1-4, S1, S2
-│   └── 14_fig5_redraw.R           Figure 5
+│   ├── 09_deconvolution_MuSiC.R   bulk gate; full-gene MuSiC; marker panel;
+│   │                              four-arm comparison
+│   ├── 10_candidate_scoring.R     8-dimension adjudication
+│   ├── 11_MR_exploratory.R        two-sample MR (the v4 configuration)
+│   ├── 12_HPA_check.R             protein annotation table
+│   ├── 13_figures.R               Figures 1-4, S1, S2
+│   └── 14_fig5_redraw.R           Figure 5, from the authoritative stage table
 ├── data/
 │   └── datasets.md                accessions, platforms, dates
 ├── results/
 │   ├── tables/                    analysed result tables cited in the paper
 │   └── figures/                   submitted figure files
+├── cache/                         large intermediate objects (not committed)
 └── docs/
     ├── analysis_parameters.md     the complete parameter set
+    ├── build_notes.md             how these scripts relate to the originals
     ├── code_inventory_raw.md      audit of the original working files
     ├── manuscript_discrepancies.md  code vs manuscript, item by item
+    ├── original_scripts_manifest.md  provenance of each original file
     └── repository_scope.md        what is in, what is out, and why
 ```
+
+Only `R/01_download_and_DE.R` is a re-implementation; every other script is a
+restoration of the original analysis logic. The distinction is stated in each
+script's header, and `docs/build_notes.md` explains what reconstruction involved.
 
 ---
 
