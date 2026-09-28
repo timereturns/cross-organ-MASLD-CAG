@@ -45,9 +45,11 @@ the notice is boilerplate attached to a data package; that position has not been
 independently confirmed.
 
 **Any part of that file that may derive from a third-party package is therefore not
-redistributed here**, and no licence is asserted over it. The corresponding analysis steps
-are covered by `R/01_download_and_DE.R` and `R/02_RRA_discovery.R`, which implement the
-same pipeline from the public GEO source files.
+redistributed here**, and no licence is asserted over it. The corresponding stage is
+covered by `R/01_download_and_DE.R`, which is a **fresh implementation** of the same
+pipeline from the public GEO source files rather than a copy of the original file. It is
+marked as a re-implementation in its own header, and its per-cohort outputs should be
+checked against the reported numbers before it is relied on.
 
 This is a scoping decision, not a claim that the excluded material is unavailable. The
 author can provide it to the editors and reviewers on request, as the Nature Portfolio
