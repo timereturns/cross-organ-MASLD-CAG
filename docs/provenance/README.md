@@ -46,7 +46,7 @@ Searched for and **not found** anywhere in the file:
 
 The file has no version field and no access date, and does not record a year at all.
 
-The manuscript's Data availability statement cites **Human Protein Atlas, version 25.0**
+The manuscript's Data availability statement originally cited **Human Protein Atlas, version 25.0** (since corrected to **25.1**, the release in force on the access date)
 and an access date of **5 September 2026**. The supplementary notes say
 **2026-09-13**. Neither date, and not the version number, appears in the artifact.
 
